@@ -54,6 +54,8 @@ SOFTWARE.
 #include <vector>
 
 #include "var.hpp"
+#include "function.hpp"
+namespace sgt {
 class SDLG {
  private:
   std::vector<sgt::Vectorlf> points;
@@ -69,6 +71,9 @@ class SDLG {
   void drawGraphBackground();
   void drawLines();
 
+
+  friend void Func::setCurve();
+  friend void Func::setCurve(sgt::Colour colour);
  public:
   SDLG();
   void setWinSize(int width, int height);
@@ -76,8 +81,7 @@ class SDLG {
   void startLoop();
   void setLine(sgt::Vectorlf, sgt::Vectorlf);
   void setLine(sgt::Vectorlf, sgt::Vectorlf, sgt::Colour colour);
-  void setCurve(sgt::Segments segments);
-  void setCurve(sgt::Segments segments, sgt::Colour colour);
+
   void deleteLine(size_t index);
   void stop();
   ~SDLG();
@@ -184,6 +188,6 @@ void SDLG::deleteLine(size_t index) { lines.erase(lines.begin() + index); }
 SDLG::~SDLG() {
   delete window;
   delete renderer;
-};
-
+}
+}
 #endif
