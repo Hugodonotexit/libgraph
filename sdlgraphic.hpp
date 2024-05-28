@@ -58,30 +58,29 @@ SOFTWARE.
 namespace sgt {
 class SDLG {
  private:
-  std::vector<sgt::Vectorlf> points;
+  std::vector<Vectorlf> points;
   bool isOpen;
   SDL_Window* window;
   SDL_Renderer* renderer;
   SDL_Event e;
-  sgt::Colour windowColour;
-
-  std::vector<std::pair<sgt::Segments, sgt::Colour>> lines;
+  Colour windowColour;
+  std::vector<Func> funcs;
+  std::vector<std::pair<LineSeg, Colour>> lines;
 
   void eventLoop();
   void drawGraphBackground();
   void drawLines();
 
 
-  friend void Func::setCurve();
-  friend void Func::setCurve(sgt::Colour colour);
+  void setCurve();
+  void setCurve(Colour colour);
  public:
   SDLG();
   void setWinSize(int width, int height);
-  void setWinwColour(sgt::Colour colour);
+  void setWinwColour(Colour colour);
   void startLoop();
-  void setLine(sgt::Vectorlf, sgt::Vectorlf);
-  void setLine(sgt::Vectorlf, sgt::Vectorlf, sgt::Colour colour);
-
+  void setLine(Vectorlf, Vectorlf);
+  void setLine(Vectorlf, Vectorlf, Colour colour);
   void deleteLine(size_t index);
   void stop();
   ~SDLG();
@@ -106,11 +105,11 @@ void SDLG::drawLines() {
   for (size_t i = 0; i < lines.size(); i++) {
     SDL_SetRenderDrawColor(renderer, lines[i].second.r, lines[i].second.g,
                            lines[i].second.b, lines[i].second.t);
-    for (size_t j = 0; j < lines[i].first.size(); j++) {
-      SDL_RenderDrawLine(renderer, lines[i].first[j].first.x,
-                         lines[i].first[j].first.y, lines[i].first[j].second.x,
-                         lines[i].first[j].second.y);
-    }
+    
+    SDL_RenderDrawLine(renderer, lines[i].first.first.x,
+                        lines[i].first.first.y, lines[i].first.second.x,
+                        lines[i].first.second.y);
+    
   }
 }
 
@@ -118,7 +117,7 @@ void SDLG::setWinSize(int width, int height) {
   SDL_SetWindowSize(window, width, height);
 }
 
-void SDLG::setWinwColour(sgt::Colour colour) {
+void SDLG::setWinwColour(Colour colour) {
   windowColour = colour;
 }
 
@@ -165,23 +164,14 @@ void SDLG::stop() {
   SDL_Quit();
 }
 
-void SDLG::setLine(sgt::Vectorlf a, sgt::Vectorlf b) {
-  sgt::Colour colour((rand() % 255), (rand() % 255), (rand() % 255), 255);
-  sgt::LineSeg lineSeg = std::make_pair(a, b);
-  sgt::Segments line{lineSeg};
-  lines.push_back(std::make_pair(line, colour));
+void SDLG::setLine(Vectorlf a, Vectorlf b) {
+  Colour colour((rand() % 255), (rand() % 255), (rand() % 255), 255);
+  LineSeg lineSeg = std::make_pair(a, b);
+  lines.push_back(std::make_pair(lineSeg, colour));
 }
-void SDLG::setLine(sgt::Vectorlf a, sgt::Vectorlf b, sgt::Colour colour) {
-  sgt::LineSeg lineSeg = std::make_pair(a, b);
-  sgt::Segments line{lineSeg};
-  lines.push_back(std::make_pair(line, colour));
-}
-void SDLG::setCurve(sgt::Segments segments) {
-  sgt::Colour colour((rand() % 255), (rand() % 255), (rand() % 255), 255);
-  lines.push_back(std::make_pair(segments, colour));
-}
-void SDLG::setCurve(sgt::Segments segments, sgt::Colour colour) {
-  lines.push_back(std::make_pair(segments, colour));
+void SDLG::setLine(Vectorlf a, Vectorlf b, Colour colour) {
+  LineSeg lineSeg = std::make_pair(a, b);
+  lines.push_back(std::make_pair(lineSeg, colour));
 }
 void SDLG::deleteLine(size_t index) { lines.erase(lines.begin() + index); }
 

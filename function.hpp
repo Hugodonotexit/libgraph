@@ -62,6 +62,7 @@ class Func : public sgt::Math {
   using varsFunc = std::variant<double, char>;
   std::vector<varsFunc> function;
   std::vector<size_t> openBracket, colseBracket;
+  std::vector<Vectorlf> point;
   void checkFunc();
   void locateBracket();
   void pushFunc();
