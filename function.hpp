@@ -61,7 +61,7 @@ class Func : public sgt::Math {
   std::string _function;
   using varsFunc = std::variant<double, char>;
   std::vector<varsFunc> function;
-  std::vector<size_t> openBracket, colseBracket;
+  std::vector<std::pair<size_t,size_t>> bracket;
   std::vector<Vectorlf> point;
   void checkFunc();
   void locateBracket();
@@ -72,6 +72,7 @@ class Func : public sgt::Math {
   Func(std::string _function);
   void setFunc(std::string _function);
   std::string getFunc() const;
+  void get_y(double x);
   void setCurve();
   void setCurve(sgt::Colour colour);
   ~Func();
@@ -86,22 +87,40 @@ void Func::setFunc(std::string _function) {
   } catch (const std::logic_error& e) {
     std::cerr << "Undefined function!!! " << e.what() << std::endl;
     _function = "NULL";
+    function.erase(function.begin(),function.end());
     return;
   }
   pushFunc();
-  locateBracket();
+  try {
+    locateBracket();;
+  } catch (const std::logic_error& e) {
+    std::cerr << "Undefined function!!! " << e.what() << std::endl;
+    _function = "NULL";
+    function.erase(function.begin(),function.end());
+    return;
+  }
 };
 std::string Func::getFunc() const { return _function; };
 Func::~Func(){};
 
 void Func::checkFunc() {
-  if (_function[1] == '/' || _function[1] == '%' || _function[1] == '*' ||
-      _function[1] == '^' || _function[1] == '!' || _function[1] == '=') {
+  if (_function[1] == '/' || _function[1] == '*' ||
+      _function[1] == '^' || _function[1] == '!') {
+    throw std::logic_error("ERROR00");
+    return;
+  }
+  if (_function[_function.size()-1] == '/' || _function[_function.size()-1] == '*' || _function[_function.size()-1] == '+' ||
+      _function[_function.size()-1] == '^' || _function[_function.size()-1] == '!' || _function[_function.size()-1] == '-') {
     throw std::logic_error("ERROR00");
     return;
   }
 
   for (size_t i = 0; i < _function.size(); i++) {
+    if (_function[i] == '(' && (_function[i+1] == '/' || _function[i+1] == '*' ||
+      _function[i+1] == '^' || _function[i+1] == '!')) {
+    throw std::logic_error("ERROR00");
+    return;
+  }
     switch (_function[i]) {
       case '.':
       case '0':
@@ -142,14 +161,35 @@ void Func::checkFunc() {
   }
 };
 void Func::locateBracket() {
+  std::vector<size_t> openBracket, closeBracket;
   for (size_t i = 0; i < function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == '(') {
         openBracket.push_back(i);
       } else if (std::get<char>(function[i]) == ')') {
-        colseBracket.push_back(i);
+        closeBracket.push_back(i);
       }
     }
+  }
+  if (openBracket.size() != closeBracket.size())
+  {
+    throw std::logic_error("ERROR00");
+    return;
+  }
+  for (size_t i = openBracket.size() - 1; i >= 0; i--)
+  {
+    if (openBracket[i] >= closeBracket[i])
+    {
+      throw std::logic_error("ERROR00");
+      return;
+    }   
+  }
+  for (size_t i = 0; i < openBracket.size() - 1; i++)
+  {
+    for (size_t j = closeBracket.size(); j >= 0; j--)
+    {
+       bracket.push_back(std::make_pair(openBracket[i],closeBracket[j]));
+    }   
   }
 }
   void Func::pushFunc() {
@@ -163,12 +203,44 @@ void Func::locateBracket() {
         continue;;
       } else if (!std::isdigit(_function[i]) && isNum){
         isNum = false;
-        double num = std::stod(_function.substr(numCharStart, i -1));
+        double num = std::stod(_function.substr(numCharStart, i - 1));
         function.push_back(num);
         continue;
       } else if (std::isdigit(_function[i]) && isNum) {continue;}
       function.push_back(_function[i]);
     }
   };
+
+  void Func::get_y(double x) {
+    std::vector<double> tempNum;
+    std::vector<char> tempOp;
+    size_t doneIndex = 0, bracketIndex = bracket.size() - 1;
+    for (size_t i = 0; i < function.size(); i++)
+      {
+        if (std::holds_alternative<char>(function[i]))
+        {
+          if (std::get<char>(function[i]) == 'x')
+          {
+            function[i] = x;
+          }
+          
+        }
+        
+      }
+    while (doneIndex != function.size())
+    {
+      for (size_t i = bracket[bracketIndex].first; i < bracket[bracketIndex].second; i++)
+      {
+        if (std::holds_alternative<char>(function[i])){
+
+        } else {
+
+        }
+      }
+      
+    }
+    
+    
+  }
 }  // namespace sgt
 #endif
