@@ -61,25 +61,23 @@ class Func : public sgt::Math {
   std::string _function;
   using varsFunc = std::variant<double, char>;
   std::vector<varsFunc> function;
-  std::vector<std::pair<size_t,size_t>> bracket;
+  std::vector<std::pair<size_t, size_t>> bracket;
   std::vector<Vectorlf> point;
   void checkFunc();
   void locateBracket();
   void pushFunc();
-  
+
  public:
   Func();
   Func(std::string _function);
   void setFunc(std::string _function);
   std::string getFunc() const;
-  void get_y(double x);
-  void setCurve();
-  void setCurve(sgt::Colour colour);
+  double get_y(double x);
   ~Func();
 };
 
 Func::Func(){};
-Func::Func(std::string _function) : _function(_function){};
+Func::Func(std::string _function) { setFunc(_function); }
 void Func::setFunc(std::string _function) {
   this->_function = _function;
   try {
@@ -87,40 +85,38 @@ void Func::setFunc(std::string _function) {
   } catch (const std::logic_error& e) {
     std::cerr << "Undefined function!!! " << e.what() << std::endl;
     _function = "NULL";
-    function.erase(function.begin(),function.end());
+    function.erase(function.begin(), function.end());
     return;
   }
   pushFunc();
-  try {
-    locateBracket();;
-  } catch (const std::logic_error& e) {
-    std::cerr << "Undefined function!!! " << e.what() << std::endl;
-    _function = "NULL";
-    function.erase(function.begin(),function.end());
-    return;
-  }
+  
 };
 std::string Func::getFunc() const { return _function; };
 Func::~Func(){};
 
 void Func::checkFunc() {
-  if (_function[1] == '/' || _function[1] == '*' ||
-      _function[1] == '^' || _function[1] == '!') {
-    throw std::logic_error("ERROR00");
+  if (_function[0] == '/' || _function[0] == '*' || _function[0] == '^' ||
+      _function[0] == '!') {
+    throw std::logic_error("ERROR00a");
     return;
   }
-  if (_function[_function.size()-1] == '/' || _function[_function.size()-1] == '*' || _function[_function.size()-1] == '+' ||
-      _function[_function.size()-1] == '^' || _function[_function.size()-1] == '!' || _function[_function.size()-1] == '-') {
-    throw std::logic_error("ERROR00");
+  if (_function[_function.size() - 1] == '/' ||
+      _function[_function.size() - 1] == '*' ||
+      _function[_function.size() - 1] == '+' ||
+      _function[_function.size() - 1] == '^' ||
+      _function[_function.size() - 1] == '!' ||
+      _function[_function.size() - 1] == '-') {
+    throw std::logic_error("ERROR00b");
     return;
   }
 
   for (size_t i = 0; i < _function.size(); i++) {
-    if (_function[i] == '(' && (_function[i+1] == '/' || _function[i+1] == '*' ||
-      _function[i+1] == '^' || _function[i+1] == '!')) {
-    throw std::logic_error("ERROR00");
-    return;
-  }
+    if ( _function.size() > 1 && _function[i] == '(' &&
+        (_function[i + 1] == '/' || _function[i + 1] == '*' ||
+         _function[i + 1] == '^' || _function[i + 1] == '!')) {
+      throw std::logic_error("ERROR00c");
+      return;
+    }
     switch (_function[i]) {
       case '.':
       case '0':
@@ -154,93 +150,160 @@ void Func::checkFunc() {
       case ')':
         break;
       default:
-        throw std::logic_error("ERROR00");
+        throw std::logic_error("ERROR00d");
         return;
         break;
     }
   }
 };
 void Func::locateBracket() {
+  bracket.erase(bracket.begin(),bracket.end());
   std::vector<size_t> openBracket, closeBracket;
-  for (size_t i = 0; i < function.size(); i++) {
+  for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == '(') {
         openBracket.push_back(i);
       } else if (std::get<char>(function[i]) == ')') {
         closeBracket.push_back(i);
       }
+      std::cout << i << std::endl;
     }
   }
-  if (openBracket.size() != closeBracket.size())
-  {
-    throw std::logic_error("ERROR00");
+  if (openBracket.size() != closeBracket.size()) {
+    throw std::logic_error("ERROR01a");
     return;
   }
-  for (size_t i = openBracket.size() - 1; i >= 0; i--)
-  {
-    if (openBracket[i] >= closeBracket[i])
-    {
-      throw std::logic_error("ERROR00");
+  for (int i = (int)openBracket.size() - 1; i >= 0; i--) {
+    if (openBracket[i] >= closeBracket[i]) {
+      throw std::logic_error("ERROR01b");
       return;
-    }   
+    }
   }
-  for (size_t i = 0; i < openBracket.size() - 1; i++)
-  {
-    for (size_t j = closeBracket.size(); j >= 0; j--)
-    {
-       bracket.push_back(std::make_pair(openBracket[i],closeBracket[j]));
-    }   
+  for (int i = 0; i < (int)openBracket.size(); i++) {
+    for (int j = closeBracket.size(); j >= 0; j--) {
+      bracket.push_back(std::make_pair(openBracket[i], closeBracket[j]));
+    }
   }
 }
-  void Func::pushFunc() {
-    bool isNum = false;
-    size_t numCharStart;
-    for (size_t i = 0; i < _function.size(); i++) {
-      if ((std::isdigit(_function[i]) || _function[i] == '.') && !isNum)
-      {
-        isNum = true;
-        numCharStart = i;
-        continue;;
-      } else if (!std::isdigit(_function[i]) && isNum){
-        isNum = false;
-        double num = std::stod(_function.substr(numCharStart, i - 1));
-        function.push_back(num);
-        continue;
-      } else if (std::isdigit(_function[i]) && isNum) {continue;}
-      function.push_back(_function[i]);
+
+void Func::pushFunc() {
+  bool isNum = false;
+  size_t numCharStart;
+
+  function.push_back('(');
+
+  for (size_t i = 0; i < _function.size(); i++) {
+    if ((std::isdigit(_function[i]) || _function[i] == '.') && !isNum) {
+      isNum = true;
+      numCharStart = i;
+      continue;
+    } else if (!(std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
+      isNum = false;
+      double num = std::stod(_function.substr(numCharStart, i-numCharStart));
+      function.push_back(num);
+      continue;
+    } else if ((std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
+      continue;
     }
-  };
-
-  void Func::get_y(double x) {
-    std::vector<double> tempNum;
-    std::vector<char> tempOp;
-    size_t doneIndex = 0, bracketIndex = bracket.size() - 1;
-    for (size_t i = 0; i < function.size(); i++)
-      {
-        if (std::holds_alternative<char>(function[i]))
-        {
-          if (std::get<char>(function[i]) == 'x')
-          {
-            function[i] = x;
-          }
-          
-        }
-        
-      }
-    while (doneIndex != function.size())
-    {
-      for (size_t i = bracket[bracketIndex].first; i < bracket[bracketIndex].second; i++)
-      {
-        if (std::holds_alternative<char>(function[i])){
-
-        } else {
-
-        }
-      }
-      
-    }
-    
-    
+    function.push_back(_function[i]);
   }
+  if (isNum)
+  {
+    
+    double num = std::stod(_function.substr(numCharStart, _function.size() - numCharStart));
+    function.push_back(num);
+  }
+  
+
+  function.push_back(')');
+  locateBracket();
+};
+
+double Func::get_y(double x) {
+  for (size_t i = 0; i < function.size(); i++) {
+    if (std::holds_alternative<char>(function[i])) {
+      if (std::get<char>(function[i]) == 'x') {
+        function[i] = x;
+      } else if (std::get<char>(function[i]) == 'e') {
+        function[i] = 2.71828;
+      }
+    };
+  }
+  for (int j = bracket.size() - 1; j >= 0; j--) {
+    for (int i = (int)bracket[j].first + 1;
+         i < (int)bracket[j].second - 1; i++) {
+      if (std::holds_alternative<char>(function[i]) &&
+          std::holds_alternative<char>(function[i - 1]) &&
+          std::holds_alternative<double>(function[i + 1])) {
+        switch (std::get<char>(function[i])) {
+          case '-':
+            function[i] = std::nan("");
+            function[i + 1] = negative(std::get<double>(function[i + 1]));
+            break;
+
+          case '+':
+            function[i] = std::nan("");
+            break;
+          default:
+            throw std::logic_error("ERROR02");
+            break;
+        }
+      } else if (std::holds_alternative<char>(function[i]) &&
+          std::holds_alternative<double>(function[i - 1]) &&
+          std::holds_alternative<double>(function[i + 1]))
+      {
+        switch (std::get<char>(function[i]))
+        {
+        case '+':
+          function[i] = add(std::get<double>(function[i-1]),std::get<double>(function[i+1]));
+          function[i+1] = std::nan("");
+          function[i-1] = std::nan("");
+          break;
+        case '-':
+          function[i] = minus(std::get<double>(function[i-1]),std::get<double>(function[i+1]));
+          function[i+1] = std::nan("");
+          function[i-1] = std::nan("");
+          break;
+        case '*':
+          function[i] = times(std::get<double>(function[i-1]),std::get<double>(function[i+1]));
+          function[i+1] = std::nan("");
+          function[i-1] = std::nan("");
+          break;
+        case '/':
+          function[i] = divide(std::get<double>(function[i-1]),std::get<double>(function[i+1]));
+          function[i+1] = std::nan("");
+          function[i-1] = std::nan("");
+          break;
+        case '^':
+          function[i] = pow(std::get<double>(function[i-1]),std::get<double>(function[i+1]));
+          function[i+1] = std::nan("");
+          function[i-1] = std::nan("");
+          break;
+        default:
+          throw std::logic_error("ERROR03");
+          break;
+        }
+      }
+      locateBracket();
+    }
+  }
+  for (size_t i = 0; i < function.size(); i++) {
+    if (std::holds_alternative<double>(function[i])) {
+      if (std::isnan(std::get<double>(function[i]))) {
+        function.erase(function.begin() + i);
+        i--;
+        } 
+    } else if (std::holds_alternative<char>(function[i])) {
+      if (std::get<char>(function[i]) == '(' || std::get<char>(function[i]) == ')') {
+        function.erase(function.begin() + i);
+      i--;
+      }
+    }
+
+  }
+
+  return std::get<double>(function[0]);
+}
+
 }  // namespace sgt
 #endif

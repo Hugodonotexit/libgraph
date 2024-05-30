@@ -52,6 +52,7 @@ class Math {
  protected:
   Math() {};
   double add(double a, double b) {return a+b;}
+  double minus(double a, double b) {return a-b;}
   double times(double a, double b) {return a*b;}
   double divide(double a, double b) {return a/b;}
   double pow(double a, double b) {return pow(a,b);}

@@ -71,9 +71,6 @@ class SDLG {
   void drawGraphBackground();
   void drawLines();
 
-
-  void setCurve();
-  void setCurve(Colour colour);
  public:
   SDLG();
   void setWinSize(int width, int height);
@@ -81,6 +78,8 @@ class SDLG {
   void startLoop();
   void setLine(Vectorlf, Vectorlf);
   void setLine(Vectorlf, Vectorlf, Colour colour);
+  void setCurve(size_t funcIndex);
+  void setCurve(size_t funcIndex, Colour colour);
   void deleteLine(size_t index);
   void stop();
   ~SDLG();
