@@ -54,7 +54,14 @@ class Math {
   double add(double a, double b) {return a+b;}
   double minus(double a, double b) {return a-b;}
   double times(double a, double b) {return a*b;}
-  double divide(double a, double b) {return a/b;}
+  double divide(double a, double b) {
+    if (b == 0)
+    {
+      throw std::logic_error("ERROR_DIVIDED_BY_ZERO");
+      return NULL;
+    }
+    return a/b;
+    }
   double pow(double a, double b) {return pow(a,b);}
   double negative(double a) {return -a;}
   double abs(double a) {return abs(a);}
@@ -71,9 +78,18 @@ class Math {
   double atan(double a) {return log(a);}
   double tanh(double a) {return log(a);}
   double atanh(double a) {return log(a);}
-  double atanh(double a) {return log(a);}
-  long factorial(long a) {
-
+  long factorial(int a) {
+    if (a == 0)
+    {
+      return 1;
+    }
+    
+    int x = 1;
+    for (int i = 1; i <= a; i++)
+    {
+      x *= i;
+    }
+    return x;
   }
   ~Math() {};
 };
