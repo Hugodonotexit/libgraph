@@ -58,7 +58,7 @@ class Math {
     if (b == 0)
     {
       throw std::logic_error("ERROR_DIVIDED_BY_ZERO");
-      return NULL;
+      return std::nan("");
     }
     return a/b;
     }
