@@ -196,15 +196,16 @@ void Func::locateBrackets() {
 
 void Func::locateOps() {
   for (size_t i = 0; i < function.size(); i++) {
-    switch (expression) {
-      case /* constant-expression */:
-        /* code */
-        break;
-
-      default:
-        break;
+    if (std::holds_alternative<char>(function[i]))
+    {
+      /* code */
+    } else if (std::holds_alternative<std::string>(function[i]))
+    {
+      
     }
-  }
+    
+    
+    }
 }
 
 void Func::pushFunc() {
