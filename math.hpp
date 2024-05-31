@@ -71,6 +71,10 @@ class Math {
   double atan(double a) {return log(a);}
   double tanh(double a) {return log(a);}
   double atanh(double a) {return log(a);}
+  double atanh(double a) {return log(a);}
+  long factorial(long a) {
+
+  }
   ~Math() {};
 };
 }  // namespace sgt

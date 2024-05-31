@@ -59,10 +59,11 @@ SOFTWARE.
 namespace sgt {
 class Func : public sgt::Math {
  private:
+  std::vector<int> operators;
   std::string _function;
   using varsFunc = std::variant<double, char, std::string>;
   std::vector<varsFunc> function;
-  std::vector<std::pair<size_t, size_t>> bracket;
+  std::vector<std::pair<size_t, size_t>> brackets;
   std::vector<Vectorlf> point;
   void checkFunc();
 
@@ -70,9 +71,11 @@ class Func : public sgt::Math {
   void cleanNAN();
   void locateBrackets();
   void locateOps();
+  bool isValidLongOps(std::string s);
 
   void pushFunc();
   bool isValidCharacter(char c);
+  bool isInteger(double value);
 
   void calculate(varsFunc &element);
 
@@ -85,12 +88,21 @@ class Func : public sgt::Math {
   ~Func();
 };
 
+bool Func::isInteger(double value) { return std::floor(value) == value; }
+
 bool Func::isValidCharacter(char c) {
   static const std::unordered_set<char> validChars = {
       '.', '0', '1', '2', '3', '4', '5', '6', '7', '8',
       '9', '+', '-', '*', '^', '!', 'x', 'e', 'a', 'h',
       'i', 'l', 'n', 'o', 'p', 's', 't', '|', '(', ')'};
   return validChars.find(c) != validChars.end();
+}
+
+bool isValidLongOps(std::string s) {
+  static const std::unordered_set<std::string> validLongOps = {
+      "ln",   "sin",   "asin", "sinh", "asinh", "cos",  "acos",
+      "cosh", "acosh", "tan",  "atan", "tanh",  "atanh"};
+  return validLongOps.find(s) != validLongOps.end();
 }
 
 Func::Func(){};
@@ -128,7 +140,6 @@ void Func::checkFunc() {
       _function[_function.size() - 1] == '*' ||
       _function[_function.size() - 1] == '+' ||
       _function[_function.size() - 1] == '^' ||
-      _function[_function.size() - 1] == '!' ||
       _function[_function.size() - 1] == '-') {
     throw std::logic_error("ERROR00b");
     return;
@@ -165,7 +176,7 @@ void Func::cleanNAN() {
 };
 
 void Func::locateBrackets() {
-  bracket.erase(bracket.begin(), bracket.end());
+  brackets.erase(brackets.begin(), brackets.end());
   std::vector<size_t> openBracket, closeBracket;
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
@@ -189,23 +200,29 @@ void Func::locateBrackets() {
   }
   for (int i = 0; i < (int)openBracket.size(); i++) {
     for (int j = closeBracket.size(); j >= 0; j--) {
-      bracket.push_back(std::make_pair(openBracket[i], closeBracket[j]));
+      brackets.push_back(std::make_pair(openBracket[i], closeBracket[j]));
     }
   }
 }
 
 void Func::locateOps() {
+  operators.erase(operators.begin(), operators.end());
   for (size_t i = 0; i < function.size(); i++) {
-    if (std::holds_alternative<char>(function[i]))
-    {
-      /* code */
-    } else if (std::holds_alternative<std::string>(function[i]))
-    {
-      
+    if (std::holds_alternative<char>(function[i])) {
+      if (std::get<char>(function[i]) == '+' ||
+          std::get<char>(function[i]) == '-' ||
+          std::get<char>(function[i]) == '*' ||
+          std::get<char>(function[i]) == '/' ||
+          std::get<char>(function[i]) == '^' ||
+          std::get<char>(function[i]) == '!') {
+        operators.push_back(i);
+      }
+    } else if (std::holds_alternative<std::string>(function[i])) {
+      if (isValidLongOps(std::get<std::string>(function[i]))) {
+        operators.push_back(i);
+      }
     }
-    
-    
-    }
+  }
 }
 
 void Func::pushFunc() {
@@ -409,13 +426,28 @@ void Func::pushFunc() {
           break;
       }
     }
-
     function.push_back(_function[i]);
   }
   if (isNum) {
     double num = std::stod(
         _function.substr(numCharStart, _function.size() - numCharStart));
     function.push_back(num);
+  }
+  for (int i = 0; i < function.size(); i++) {
+    if (std::holds_alternative<char>(function[i])) {
+      if (std::get<char>(function[i]) == '!') {
+        if (std::holds_alternative<double>(function[i - 1])) {
+          if (!isInteger(std::get<double>(function[i - 1]))) {
+            throw std::logic_error("ERROR02p");
+            return;
+          }
+
+        } else {
+          throw std::logic_error("ERROR02q");
+          return;
+        }
+      }
+    }
   }
 };
 
@@ -477,6 +509,18 @@ void Func::calculate(varsFunc &element) {
         return;
         break;
     }
+  } else if (std::holds_alternative<char>(*func)) {
+    if (std::get<char>(*func) == '!') {
+      if (std::holds_alternative<double>(*(func - 1))) {
+        if (!isInteger(std::get<double>(*(func - 1)))) {
+          throw std::logic_error("ERROR03c");
+          return;
+        }
+      } else {
+        throw std::logic_error("ERROR03d");
+        return;
+      }
+    }
   }
 }
 
@@ -489,9 +533,9 @@ double Func::get_y(double x) {
     };
   }
   scanFunc();
-  if (!bracket.empty()) {
-    for (int j = bracket.size() - 1; j >= 0; j--) {
-      for (int i = (int)bracket[j].first + 1; i < (int)bracket[j].second - 1;
+  if (!brackets.empty()) {
+    for (int j = brackets.size() - 1; j >= 0; j--) {
+      for (int i = (int)brackets[j].first + 1; i < (int)brackets[j].second - 1;
            i++) {
         calculate(function[i]);
         scanFunc();
