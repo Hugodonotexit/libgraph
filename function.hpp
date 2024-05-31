@@ -60,7 +60,7 @@ namespace sgt {
 class Func : public sgt::Math {
  private:
   std::string _function;
-  using varsFunc = std::variant<double, char>;
+  using varsFunc = std::variant<double, char, std::string>;
   std::vector<varsFunc> function;
   std::vector<std::pair<size_t, size_t>> bracket;
   std::vector<Vectorlf> point;
@@ -73,6 +73,8 @@ class Func : public sgt::Math {
 
   void pushFunc();
   bool isValidCharacter(char c);
+
+  void calculate(varsFunc &element);
 
  public:
   Func();
@@ -97,13 +99,20 @@ void Func::setFunc(std::string _function) {
   this->_function = _function;
   try {
     checkFunc();
-  } catch (const std::logic_error& e) {
+  } catch (const std::logic_error &e) {
     std::cerr << "Undefined function!!! " << e.what() << std::endl;
     _function = "NULL";
     function.erase(function.begin(), function.end());
-    return;
+    abort();
   }
-  pushFunc();
+  try {
+    pushFunc();
+  } catch (const std::logic_error &e) {
+    std::cerr << "Undefined function!!! " << e.what() << std::endl;
+    _function = "NULL";
+    function.erase(function.begin(), function.end());
+    abort();
+  }
 };
 std::string Func::getFunc() const { return _function; };
 Func::~Func(){};
@@ -114,7 +123,8 @@ void Func::checkFunc() {
     throw std::logic_error("ERROR00a");
     return;
   }
-  if (_function[_function.size() - 1] == '/' ||
+  if (_function[_function.size() - 1] == '(' ||
+      _function[_function.size() - 1] == '/' ||
       _function[_function.size() - 1] == '*' ||
       _function[_function.size() - 1] == '+' ||
       _function[_function.size() - 1] == '^' ||
@@ -133,6 +143,7 @@ void Func::checkFunc() {
     }
     if (!isValidCharacter(_function[i])) {
       throw std::logic_error("ERROR00d");
+      return;
     }
   }
 };
@@ -183,7 +194,18 @@ void Func::locateBrackets() {
   }
 }
 
-void Func::locateOps() {}
+void Func::locateOps() {
+  for (size_t i = 0; i < function.size(); i++) {
+    switch (expression) {
+      case /* constant-expression */:
+        /* code */
+        break;
+
+      default:
+        break;
+    }
+  }
+}
 
 void Func::pushFunc() {
   bool isNum = false;
@@ -201,7 +223,192 @@ void Func::pushFunc() {
       continue;
     } else if ((std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
       continue;
+    } else if (_function[i] == 'e') {
+      function.push_back((double)2.718281828459045);
+      continue;
+    } else if (_function[i] == 'p' && _function[i + 1] == 'i') {
+      function.push_back((double)3.1415926535897932);
+      i++;
+      continue;
+    } else {
+      switch (_function[i]) {
+        case 'a':
+          switch (_function[i + 1]) {
+            case 's':
+              if (_function[i + 2] == 'i' && _function[i + 3] == 'n') {
+                if (_function[i + 4] == 'h' && _function[i + 5] == '(') {
+                  function.push_back("asinh");
+                  i++;
+                  i++;
+                  i++;
+                  i++;
+                  continue;
+                } else if (_function[i + 4] == '(') {
+                  function.push_back("asin");
+                  i++;
+                  i++;
+                  i++;
+                  continue;
+                } else {
+                  throw std::logic_error("ERROR02a");
+                  return;
+                }
+
+              } else {
+                throw std::logic_error("ERROR02b");
+                return;
+              }
+              break;
+
+            case 'c':
+              if (_function[i + 2] == 'o' && _function[i + 3] == 's') {
+                if (_function[i + 4] == 'h' && _function[i + 5] == '(') {
+                  function.push_back("acosh");
+                  i++;
+                  i++;
+                  i++;
+                  i++;
+                  continue;
+                } else if (_function[i + 4] == '(') {
+                  function.push_back("acos");
+                  i++;
+                  i++;
+                  i++;
+                  continue;
+                } else {
+                  throw std::logic_error("ERROR02c");
+                  return;
+                }
+
+              } else {
+                throw std::logic_error("ERROR02d");
+                return;
+              }
+              break;
+
+            case 't':
+              if (_function[i + 2] == 'a' && _function[i + 3] == 'n') {
+                if (_function[i + 4] == 'h' && _function[i + 5] == '(') {
+                  function.push_back("atanh");
+                  i++;
+                  i++;
+                  i++;
+                  i++;
+                  continue;
+                } else if (_function[i + 4] == '(') {
+                  function.push_back("atan");
+                  i++;
+                  i++;
+                  i++;
+                  continue;
+                } else {
+                  throw std::logic_error("ERROR02e");
+                  return;
+                }
+
+              } else {
+                throw std::logic_error("ERROR02f");
+                return;
+              }
+              break;
+
+            default:
+              throw std::logic_error("ERROR02g");
+              return;
+              break;
+          }
+          break;
+
+        case 's':
+          if (_function[i + 1] == 'i' && _function[i + 2] == 'n') {
+            if (_function[i + 3] == 'h' && _function[i + 4] == '(') {
+              function.push_back("sinh");
+              i++;
+              i++;
+              i++;
+              continue;
+            } else if (_function[i + 3] == '(') {
+              function.push_back("sin");
+              i++;
+              i++;
+              continue;
+            } else {
+              throw std::logic_error("ERROR02h");
+              return;
+            }
+
+          } else {
+            throw std::logic_error("ERROR02i");
+            return;
+          }
+          break;
+
+        case 'c':
+          if (_function[i + 1] == 'o' && _function[i + 2] == 's') {
+            if (_function[i + 3] == 'h' && _function[i + 4] == '(') {
+              function.push_back("cosh");
+              i++;
+              i++;
+              i++;
+              continue;
+            } else if (_function[i + 3] == '(') {
+              function.push_back("cos");
+              i++;
+              i++;
+              continue;
+            } else {
+              throw std::logic_error("ERROR02j");
+              return;
+            }
+
+          } else {
+            throw std::logic_error("ERROR02k");
+            return;
+          }
+          break;
+
+        case 't':
+          if (_function[i + 1] == 'a' && _function[i + 2] == 'n') {
+            if (_function[i + 3] == 'h' && _function[i + 4] == '(') {
+              function.push_back("tanh");
+              i++;
+              i++;
+              i++;
+              continue;
+            } else if (_function[i + 3] == '(') {
+              function.push_back("tan");
+              i++;
+              i++;
+              continue;
+            } else {
+              throw std::logic_error("ERROR02l");
+              return;
+            }
+
+          } else {
+            throw std::logic_error("ERROR02m");
+            return;
+          }
+          break;
+
+        case 'l':
+          if (_function[i + 1] == 'n' && _function[i + 2] == '(') {
+            function.push_back("ln");
+            i++;
+            continue;
+          } else {
+            throw std::logic_error("ERROR02n");
+            return;
+          }
+          break;
+
+        default:
+          throw std::logic_error("ERROR02o");
+          return;
+          break;
+      }
     }
+
     function.push_back(_function[i]);
   }
   if (isNum) {
@@ -211,82 +418,86 @@ void Func::pushFunc() {
   }
 };
 
+void Func::calculate(varsFunc &element) {
+  varsFunc *func = &element;
+  if (std::holds_alternative<char>(*func) &&
+      std::holds_alternative<char>(*(func - 1)) &&
+      std::holds_alternative<double>(*(func + 1))) {
+    switch (std::get<char>(*func)) {
+      case '-':
+        *func = std::nan("");
+        *(func + 1) = negative(std::get<double>(*(func + 1)));
+        break;
+
+      case '+':
+        *func = std::nan("");
+        break;
+      default:
+        throw std::logic_error("ERROR03a");
+        return;
+        break;
+    }
+  } else if (std::holds_alternative<char>(*func) &&
+             std::holds_alternative<double>(*(func - 1)) &&
+             std::holds_alternative<double>(*(func + 1))) {
+    switch (std::get<char>(*func)) {
+      case '+':
+        *func =
+            add(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+        *(func + 1) = std::nan("");
+        *(func - 1) = std::nan("");
+        break;
+      case '-':
+        *func =
+            minus(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+        *(func + 1) = std::nan("");
+        *(func - 1) = std::nan("");
+        break;
+      case '*':
+        *func =
+            times(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+        *(func + 1) = std::nan("");
+        *(func - 1) = std::nan("");
+        break;
+      case '/':
+        *func = divide(std::get<double>(*(func - 1)),
+                       std::get<double>(*(func + 1)));
+        *(func + 1) = std::nan("");
+        *(func - 1) = std::nan("");
+        break;
+      case '^':
+        *func =
+            pow(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+        *(func + 1) = std::nan("");
+        *(func - 1) = std::nan("");
+        break;
+      default:
+        throw std::logic_error("ERROR03b");
+        return;
+        break;
+    }
+  }
+}
+
 double Func::get_y(double x) {
   for (size_t i = 0; i < function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == 'x') {
         function[i] = x;
-      } else if (std::get<char>(function[i]) == 'e') {
-        function[i] = 2.718281828459045;
-      } else if (std::get<char>(function[i]) == 'p' &&
-                 std::get<char>(function[i + 1]) == 'i') {
-        function[i] = 3.1415926535897932;
-        function[i + 1] = std::nan("");
       }
     };
   }
   scanFunc();
-  for (int j = bracket.size() - 1; j >= 0; j--) {
-    for (int i = (int)bracket[j].first + 1; i < (int)bracket[j].second - 1;
-         i++) {
-      if (std::holds_alternative<char>(function[i]) &&
-          std::holds_alternative<char>(function[i - 1]) &&
-          std::holds_alternative<double>(function[i + 1])) {
-        switch (std::get<char>(function[i])) {
-          case '-':
-            function[i] = std::nan("");
-            function[i + 1] = negative(std::get<double>(function[i + 1]));
-            break;
-
-          case '+':
-            function[i] = std::nan("");
-            break;
-          default:
-            throw std::logic_error("ERROR02");
-            break;
-        }
-      } else if (std::holds_alternative<char>(function[i]) &&
-                 std::holds_alternative<double>(function[i - 1]) &&
-                 std::holds_alternative<double>(function[i + 1])) {
-        switch (std::get<char>(function[i])) {
-          case '+':
-            function[i] = add(std::get<double>(function[i - 1]),
-                              std::get<double>(function[i + 1]));
-            function[i + 1] = std::nan("");
-            function[i - 1] = std::nan("");
-            break;
-          case '-':
-            function[i] = minus(std::get<double>(function[i - 1]),
-                                std::get<double>(function[i + 1]));
-            function[i + 1] = std::nan("");
-            function[i - 1] = std::nan("");
-            break;
-          case '*':
-            function[i] = times(std::get<double>(function[i - 1]),
-                                std::get<double>(function[i + 1]));
-            function[i + 1] = std::nan("");
-            function[i - 1] = std::nan("");
-            break;
-          case '/':
-            function[i] = divide(std::get<double>(function[i - 1]),
-                                 std::get<double>(function[i + 1]));
-            function[i + 1] = std::nan("");
-            function[i - 1] = std::nan("");
-            break;
-          case '^':
-            function[i] = pow(std::get<double>(function[i - 1]),
-                              std::get<double>(function[i + 1]));
-            function[i + 1] = std::nan("");
-            function[i - 1] = std::nan("");
-            break;
-          default:
-            throw std::logic_error("ERROR03");
-            break;
-        }
+  if (!bracket.empty()) {
+    for (int j = bracket.size() - 1; j >= 0; j--) {
+      for (int i = (int)bracket[j].first + 1; i < (int)bracket[j].second - 1;
+           i++) {
+        calculate(function[i]);
+        scanFunc();
       }
-      scanFunc();
     }
   }
+
   for (size_t i = 0; i < function.size(); i++) {
     if (std::holds_alternative<double>(function[i])) {
       if (std::holds_alternative<char>(function[i])) {
