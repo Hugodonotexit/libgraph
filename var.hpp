@@ -53,7 +53,21 @@ namespace sgt {
 struct Vectorlf {
   double x;
   double y;
+
   Vectorlf(double initX, double initY) : x(initX), y(initY) {}
+
+  Vectorlf operator+(const Vectorlf& other) const {
+    return Vectorlf(x + other.x, y + other.y);
+  }
+  Vectorlf operator-(const Vectorlf& other) const {
+    return Vectorlf(x - other.x, y - other.y);
+  }
+  Vectorlf operator*(const Vectorlf& other) const {
+    return Vectorlf(x * other.x, y * other.y);
+  }
+  Vectorlf operator/(const Vectorlf& other) const {
+    return Vectorlf(x / other.x, y / other.y);
+  }
 };
 
 using LineSeg = std::pair<Vectorlf, Vectorlf>;
@@ -63,8 +77,27 @@ struct Colour {
   uint8_t g;
   uint8_t b;
   uint8_t t;
+
   Colour() : r(0), g(0), b(0), t(255) {}
   Colour(double r, double g, double b, double t) : r(r), g(g), b(b), t(t) {}
+  
+  static Colour Black(int t = 255)     { return Colour(0, 0, 0, t); }
+  static Colour White(int t = 255)     { return Colour(255, 255, 255, t); }
+  static Colour Red(int t = 255)       { return Colour(255, 0, 0, t); }
+  static Colour Lime(int t = 255)      { return Colour(0, 255, 0, t); }
+  static Colour Blue(int t = 255)      { return Colour(0, 0, 255, t); }
+  static Colour Yellow(int t = 255)    { return Colour(255, 255, 0, t); }
+  static Colour Cyan(int t = 255)      { return Colour(0, 255, 255, t); }
+  static Colour Magenta(int t = 255)   { return Colour(255, 0, 255, t); }
+  static Colour Silver(int t = 255)    { return Colour(192, 192, 192, t); }
+  static Colour Gray(int t = 255)      { return Colour(128, 128, 128, t); }
+  static Colour Maroon(int t = 255)    { return Colour(128, 0, 0, t); }
+  static Colour Olive(int t = 255)     { return Colour(128, 128, 0, t); }
+  static Colour Green(int t = 255)     { return Colour(0, 128, 0, t); }
+  static Colour Purple(int t = 255)    { return Colour(128, 0, 128, t); }
+  static Colour Teal(int t = 255)      { return Colour(0, 128, 128, t); }
+  static Colour Navy(int t = 255)      { return Colour(0, 0, 128, t); }  
+
 };
 }  // namespace sgt
 

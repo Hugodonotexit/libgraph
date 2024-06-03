@@ -59,11 +59,11 @@ SOFTWARE.
 namespace sgt {
 class Func : public sgt::Math {
  private:
-  std::vector<int> operators;
+  std::vector<int> operators[2];
   std::string _function;
   using varsFunc = std::variant<double, char, std::string>;
   std::vector<varsFunc> function;
-  std::vector<std::pair<size_t, size_t>> brackets;
+  std::vector<std::pair<int, int>> brackets;
   std::vector<Vectorlf> point;
   void checkFunc();
 
@@ -84,6 +84,7 @@ class Func : public sgt::Math {
   Func(std::string _function);
   void setFunc(std::string _function);
   std::string getFunc() const;
+  void printCompiled() const;
   double get_y(double x);
   ~Func();
 };
@@ -93,12 +94,12 @@ bool Func::isInteger(double value) { return std::floor(value) == value; }
 bool Func::isValidCharacter(char c) {
   static const std::unordered_set<char> validChars = {
       '.', '0', '1', '2', '3', '4', '5', '6', '7', '8',
-      '9', '+', '-', '*', '^', '!', 'x', 'e', 'a', 'h',
-      'i', 'l', 'n', 'o', 'p', 's', 't', '|', '(', ')'};
+      '9', '+', '-', '*', '/', '^', '!', 'x', 'e', 'a', 'h',
+      'i', 'l', 'n', 'o', 'p', 's', 't', 'c', '|', '(', ')'};
   return validChars.find(c) != validChars.end();
 }
 
-bool isValidLongOps(std::string s) {
+bool Func::isValidLongOps(std::string s) {
   static const std::unordered_set<std::string> validLongOps = {
       "ln",   "sin",   "asin", "sinh", "asinh", "cos",  "acos",
       "cosh", "acosh", "tan",  "atan", "tanh",  "atanh"};
@@ -115,7 +116,7 @@ void Func::setFunc(std::string _function) {
     std::cerr << "Undefined function!!! " << e.what() << std::endl;
     _function = "NULL";
     function.erase(function.begin(), function.end());
-    abort();
+    return;
   }
   try {
     pushFunc();
@@ -123,11 +124,26 @@ void Func::setFunc(std::string _function) {
     std::cerr << "Undefined function!!! " << e.what() << std::endl;
     _function = "NULL";
     function.erase(function.begin(), function.end());
-    abort();
+    return;
   }
 };
-std::string Func::getFunc() const { return _function; };
 Func::~Func(){};
+std::string Func::getFunc() const { return _function; };
+void Func::printCompiled() const {
+  for (int i = 0; i < (int)function.size(); i++) {
+    if (std::holds_alternative<double>(function[i])) {
+      std::cout << std::get<double>(function[i]);
+    } else if (std::holds_alternative<char>(function[i])) {
+      std::cout << std::get<char>(function[i]);
+    } else if (std::holds_alternative<std::string>(function[i])) {
+      std::cout << std::get<std::string>(function[i]);
+    } else {
+      throw std::logic_error("ERROR05");
+      return;
+    }
+  }
+  std::cout << std::endl;
+}
 
 void Func::checkFunc() {
   if (_function[0] == '/' || _function[0] == '*' || _function[0] == '^' ||
@@ -145,7 +161,7 @@ void Func::checkFunc() {
     return;
   }
 
-  for (size_t i = 0; i < _function.size(); i++) {
+  for (int i = 0; i < (int)_function.size(); i++) {
     if (_function.size() > 1 && _function[i] == '(' &&
         (_function[i + 1] == '/' || _function[i + 1] == '*' ||
          _function[i + 1] == '^' || _function[i + 1] == '!')) {
@@ -165,9 +181,9 @@ void Func::scanFunc() {
   locateOps();
 }
 void Func::cleanNAN() {
-  for (size_t i = 0; i < function.size(); i++) {
-    if (std::holds_alternative<double>(function[i])) {
-      if (std::isnan(std::get<double>(function[i]))) {
+  for (int i = 0; i < (int)function.size(); i++) {
+    if (std::holds_alternative<std::string>(function[i])) {
+      if (std::get<std::string>(function[i]) == "NA") {
         function.erase(function.begin() + i);
         i--;
       }
@@ -177,7 +193,7 @@ void Func::cleanNAN() {
 
 void Func::locateBrackets() {
   brackets.erase(brackets.begin(), brackets.end());
-  std::vector<size_t> openBracket, closeBracket;
+  std::vector<int> openBracket, closeBracket;
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == '(') {
@@ -185,7 +201,6 @@ void Func::locateBrackets() {
       } else if (std::get<char>(function[i]) == ')') {
         closeBracket.push_back(i);
       }
-      std::cout << i << std::endl;
     }
   }
   if (openBracket.size() != closeBracket.size()) {
@@ -206,20 +221,23 @@ void Func::locateBrackets() {
 }
 
 void Func::locateOps() {
-  operators.erase(operators.begin(), operators.end());
-  for (size_t i = 0; i < function.size(); i++) {
+  operators[0].erase(operators[0].begin(), operators[0].end());
+  operators[1].erase(operators[1].begin(), operators[1].end());
+  for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
-      if (std::get<char>(function[i]) == '+' ||
-          std::get<char>(function[i]) == '-' ||
-          std::get<char>(function[i]) == '*' ||
+      if (std::get<char>(function[i]) == '*' ||
           std::get<char>(function[i]) == '/' ||
           std::get<char>(function[i]) == '^' ||
           std::get<char>(function[i]) == '!') {
-        operators.push_back(i);
-      }
+        operators[0].push_back(i);
+      } else if (std::get<char>(function[i]) == '+' ||
+                 std::get<char>(function[i]) == '-') {
+        operators[1].push_back(i);
+      } 
+
     } else if (std::holds_alternative<std::string>(function[i])) {
       if (isValidLongOps(std::get<std::string>(function[i]))) {
-        operators.push_back(i);
+        operators[0].push_back(i);
       }
     }
   }
@@ -227,9 +245,9 @@ void Func::locateOps() {
 
 void Func::pushFunc() {
   bool isNum = false;
-  size_t numCharStart;
-
-  for (size_t i = 0; i < _function.size(); i++) {
+  int numCharStart = 0;
+  function.push_back((char)'(');
+  for (int i = 0; i < (int)_function.size(); i++) {
     if ((std::isdigit(_function[i]) || _function[i] == '.') && !isNum) {
       isNum = true;
       numCharStart = i;
@@ -238,6 +256,7 @@ void Func::pushFunc() {
       isNum = false;
       double num = std::stod(_function.substr(numCharStart, i - numCharStart));
       function.push_back(num);
+      i--;
       continue;
     } else if ((std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
       continue;
@@ -419,21 +438,19 @@ void Func::pushFunc() {
             return;
           }
           break;
-
-        default:
-          throw std::logic_error("ERROR02o");
-          return;
-          break;
       }
     }
     function.push_back(_function[i]);
   }
   if (isNum) {
     double num = std::stod(
-        _function.substr(numCharStart, _function.size() - numCharStart));
+        _function.substr(numCharStart, _function.size() - (size_t)numCharStart));
     function.push_back(num);
   }
-  for (int i = 0; i < function.size(); i++) {
+
+  function.push_back((char)')');
+
+  for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == '!') {
         if (std::holds_alternative<double>(function[i - 1])) {
@@ -458,16 +475,12 @@ void Func::calculate(varsFunc &element) {
       std::holds_alternative<double>(*(func + 1))) {
     switch (std::get<char>(*func)) {
       case '-':
-        *func = std::nan("");
+        *func = "NA";
         *(func + 1) = negative(std::get<double>(*(func + 1)));
         break;
 
       case '+':
-        *func = std::nan("");
-        break;
-      default:
-        throw std::logic_error("ERROR03a");
-        return;
+        *func = "NA";
         break;
     }
   } else if (std::holds_alternative<char>(*func) &&
@@ -477,35 +490,35 @@ void Func::calculate(varsFunc &element) {
       case '+':
         *func =
             add(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
-        *(func + 1) = std::nan("");
-        *(func - 1) = std::nan("");
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
         break;
       case '-':
         *func =
             minus(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
-        *(func + 1) = std::nan("");
-        *(func - 1) = std::nan("");
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
         break;
       case '*':
         *func =
             times(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
-        *(func + 1) = std::nan("");
-        *(func - 1) = std::nan("");
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
         break;
       case '/':
         *func = divide(std::get<double>(*(func - 1)),
                        std::get<double>(*(func + 1)));
-        *(func + 1) = std::nan("");
-        *(func - 1) = std::nan("");
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
         break;
       case '^':
         *func =
             pow(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
-        *(func + 1) = std::nan("");
-        *(func - 1) = std::nan("");
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
         break;
       default:
-        throw std::logic_error("ERROR03b");
+        throw std::logic_error("ERROR03a");
         return;
         break;
     }
@@ -513,19 +526,58 @@ void Func::calculate(varsFunc &element) {
     if (std::get<char>(*func) == '!') {
       if (std::holds_alternative<double>(*(func - 1))) {
         if (!isInteger(std::get<double>(*(func - 1)))) {
-          throw std::logic_error("ERROR03c");
+          throw std::logic_error("ERROR03b");
           return;
         }
+        *func = (double)factorial((long)std::get<double>(*(func - 1)));
+        *(func - 1) = "NA";
       } else {
-        throw std::logic_error("ERROR03d");
+        throw std::logic_error("ERROR03c");
         return;
       }
+    }
+  } else if (std::holds_alternative<std::string>(*func) &&
+             std::holds_alternative<char>(*(func + 1)) && 
+             std::holds_alternative<double>(*(func + 2)) && 
+             std::holds_alternative<char>(*(func + 3))) {
+    if (std::get<char>(*(func + 1)) == '(' && std::get<char>(*(func + 3)) == ')') {
+      if (std::get<std::string>(*func) == "ln") {
+        *(func + 2) = ln((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "sin")) {
+        *(func + 2) = sin((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "cos")) {
+        *(func + 2) = cos((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "tan")) {
+        *func = tan((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "asin")) {
+        *(func + 2) = asin((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "acos")) {
+        *(func + 2) = acos((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "atan")) {
+        *(func + 2) = atan((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "sinh")) {
+        *(func + 2) = sinh((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "cosh")) {
+        *(func + 2) = cosh((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "tanh")) {
+        *(func + 2) = tanh((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "asinh")) {
+        *(func + 2) = asinh((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "acosh")) {
+        *(func + 2) = acosh((std::get<double>(*(func+2))));
+      } else if ((std::get<std::string>(*func) == "atanh")) {
+        *(func + 2) = atanh((std::get<double>(*(func+2))));
+      }
+      *func = "NA";
+    } else {
+      throw std::logic_error("ERROR03d");
+      return;
     }
   }
 }
 
 double Func::get_y(double x) {
-  for (size_t i = 0; i < function.size(); i++) {
+  for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == 'x') {
         function[i] = x;
@@ -543,17 +595,16 @@ double Func::get_y(double x) {
     }
   }
 
-  for (size_t i = 0; i < function.size(); i++) {
-    if (std::holds_alternative<double>(function[i])) {
-      if (std::holds_alternative<char>(function[i])) {
-        if (std::get<char>(function[i]) == '(' ||
-            std::get<char>(function[i]) == ')') {
-          function.erase(function.begin() + i);
-          i--;
-        }
+  for (int i = 0; i < (int)function.size(); i++) {
+    if (std::holds_alternative<char>(function[i])) {
+      if (std::get<char>(function[i]) == '(' ||
+          std::get<char>(function[i]) == ')') {
+        function.erase(function.begin() + i);
+        i--;
       }
     }
   }
+  cleanNAN();
   return std::get<double>(function[0]);
 }
 

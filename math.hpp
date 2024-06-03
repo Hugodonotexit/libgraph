@@ -62,22 +62,22 @@ class Math {
     }
     return a/b;
     }
-  double pow(double a, double b) {return pow(a,b);}
+  double pow(double a, double b) {return std::pow(a,b);}
   double negative(double a) {return -a;}
-  double abs(double a) {return abs(a);}
-  double ln(double a) {return log(a);}
-  double sin(double a) {return log(a);}
-  double asin(double a) {return log(a);}
-  double sinh(double a) {return log(a);}
-  double asinh(double a) {return log(a);}
-  double cos(double a) {return log(a);}
-  double acos(double a) {return log(a);}
-  double cosh(double a) {return log(a);}
-  double acosh(double a) {return log(a);}
-  double tan(double a) {return log(a);}
-  double atan(double a) {return log(a);}
-  double tanh(double a) {return log(a);}
-  double atanh(double a) {return log(a);}
+  double abs(double a) {return std::fabs(a);}
+  double ln(double a) {return std::log(a);}
+  double sin(double a) {return std::sin(a);}
+  double asin(double a) {return std::asin(a);}
+  double sinh(double a) {return std::sinh(a);}
+  double asinh(double a) {return std::asinh(a);}
+  double cos(double a) {return std::cos(a);}
+  double acos(double a) {return std::acos(a);}
+  double cosh(double a) {return std::cosh(a);}
+  double acosh(double a) {return std::acosh(a);}
+  double tan(double a) {return std::tan(a);}
+  double atan(double a) {return std::atan(a);}
+  double tanh(double a) {return std::tanh(a);}
+  double atanh(double a) {return std::atanh(a);}
   long factorial(int a) {
     if (a == 0)
     {
