@@ -53,6 +53,7 @@ SOFTWARE.
 #include <utility>
 #include <variant>
 #include <vector>
+#include <algorithm>
 
 #include "math.hpp"
 #include "var.hpp"
@@ -466,7 +467,9 @@ void Func::calculate(varsFunc &element) {
   if (std::holds_alternative<char>(*func) &&
       std::holds_alternative<char>(*(func - 1)) &&
       std::holds_alternative<double>(*(func + 1))) {
-    switch (std::get<char>(*func)) {
+    if (std::get<char>(*(func - 1)) == '(')
+    {
+      switch (std::get<char>(*func)) {
       case '-':
         *func = "NA";
         *(func + 1) = negative(std::get<double>(*(func + 1)));
@@ -476,6 +479,8 @@ void Func::calculate(varsFunc &element) {
         *func = "NA";
         break;
     }
+    }
+    
   } else if (std::holds_alternative<char>(*func) &&
              std::holds_alternative<double>(*(func - 1)) &&
              std::holds_alternative<double>(*(func + 1))) {
@@ -581,23 +586,34 @@ double Func::get_y(double x) {
       for (int j = brackets.size() - 1; j >= 0; j--) {
         for (int i = (int)brackets[j].first + 1;
              i < (int)brackets[j].second - 1; i++) {
-          for (size_t k = 0; k < operators[0].size(); k++) {
-            if (i == operators[0][k]) {
-              calculate(function[i]);
-              scanFunc();
+            for (int k = 0; k < (int)operators[0].size(); k++) {
+              if (i == operators[0][k]) {
+                calculate(function[i]);
+                scanFunc();
+              }
             }
-          }
         }
+
+        bool foundInOperators0 = false;
+        for (int i = (int)brackets[j].first + 1; i < (int)brackets[j].second - 1; i++) {
+            for (int k = 0; k < (int)operators[0].size(); k++) {
+                if (i == operators[0][k]) {
+                    foundInOperators0 = true;
+                    break;
+                }
+            }
+        }
+        if (!foundInOperators0) {
         for (int i = (int)brackets[j].first + 1;
              i < (int)brackets[j].second - 1; i++) {
-          for (size_t k = 0; k < operators[1].size(); k++) {
-            if (i == operators[1][k]) {
-              calculate(function[i]);
-              scanFunc();
-              printCompiled();
+            for (int k = 0; k < (int)operators[1].size(); k++) {
+              if (i == operators[1][k]) {
+                calculate(function[i]);
+                scanFunc();
+              }
             }
-          }
         }
+      }
       }
     }
     cleanNAN();
