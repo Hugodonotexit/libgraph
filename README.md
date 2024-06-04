@@ -19,8 +19,6 @@ To use this library, simply include the header files in your project.
 #include "sdlgaphic.hpp"
 ```
 
-```
-
 ## Usage
 
 ### Creating a Function Object
