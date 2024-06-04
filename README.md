@@ -21,7 +21,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Prerequisites
 
 - A C++ compiler supporting C++17 or later.
-- CMake for building the project.
 
 ### Installation
 
@@ -31,19 +30,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
     cd function-parser
     ```
 
-2. Build the project using CMake:
-    ```sh
-    mkdir build
-    cd build
-    cmake ..
-    make
-    ```
-
 ### Usage
 
 Include the header files in your project:
 
 ```cpp
-#include "function.hpp"
-#include "math.hpp"
-#include "var.hpp"
+#include "sdlgraphic.hpp"
