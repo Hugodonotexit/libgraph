@@ -544,7 +544,7 @@ void Func::calculate(varsFunc &element) {
       } else if ((std::get<std::string>(*func) == "cos")) {
         *(func + 2) = cos((std::get<double>(*(func+2))));
       } else if ((std::get<std::string>(*func) == "tan")) {
-        *func = tan((std::get<double>(*(func+2))));
+        *(func + 2) = tan((std::get<double>(*(func+2))));
       } else if ((std::get<std::string>(*func) == "asin")) {
         *(func + 2) = asin((std::get<double>(*(func+2))));
       } else if ((std::get<std::string>(*func) == "acos")) {
