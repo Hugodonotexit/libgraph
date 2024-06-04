@@ -1,0 +1,268 @@
+\doxysection{sdlgraphic.\+hpp}
+\hypertarget{sdlgraphic_8hpp_source}{}\label{sdlgraphic_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{MIT\ License}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{Copyright\ (c)\ 2024\ Hugodonotexit}}
+\DoxyCodeLine{00005\ \textcolor{comment}{}}
+\DoxyCodeLine{00006\ \textcolor{comment}{Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{00007\ \textcolor{comment}{of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{00008\ \textcolor{comment}{in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{00009\ \textcolor{comment}{to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{00010\ \textcolor{comment}{copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{00011\ \textcolor{comment}{furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{00012\ \textcolor{comment}{}}
+\DoxyCodeLine{00013\ \textcolor{comment}{The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{00014\ \textcolor{comment}{copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{00015\ \textcolor{comment}{}}
+\DoxyCodeLine{00016\ \textcolor{comment}{1.Attribution:}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ \ All\ users\ of\ this\ Software\ must\ give\ appropriate\ credit\ to\ the\ original}}
+\DoxyCodeLine{00018\ \textcolor{comment}{creators.\ Such\ credit\ shall\ include,\ but\ not\ be\ limited\ to,\ the\ inclusion\ of\ the}}
+\DoxyCodeLine{00019\ \textcolor{comment}{following\ elements\ in\ any\ derived\ works,\ distributions,\ or\ publications:\ -\/The}}
+\DoxyCodeLine{00020\ \textcolor{comment}{name\ and\ version\ of\ the\ Software\ used.\ -\/A\ link\ to\ the\ original\ Software\ or\ the}}
+\DoxyCodeLine{00021\ \textcolor{comment}{original\ creator’s\ website\ (if\ applicable).\ -\/A\ clear\ statement\ that\ the\ work\ is}}
+\DoxyCodeLine{00022\ \textcolor{comment}{derived\ from\ or\ built\ with\ the\ Software.\ -\/The\ attribution\ must\ be\ placed\ in\ a}}
+\DoxyCodeLine{00023\ \textcolor{comment}{location\ that\ is\ reasonably\ conspicuous,\ ensuring\ that\ anyone\ using\ or}}
+\DoxyCodeLine{00024\ \textcolor{comment}{interacting\ with\ the\ derivative\ work\ is\ aware\ of\ the\ original\ creators'}}
+\DoxyCodeLine{00025\ \textcolor{comment}{contribution.\ 2.Commercial\ Use:\ Use\ of\ the\ Software\ for\ commercial\ purposes\ is}}
+\DoxyCodeLine{00026\ \textcolor{comment}{subject\ to\ prior\ approval\ by\ the\ original\ creators.\ Entities\ or\ individuals}}
+\DoxyCodeLine{00027\ \textcolor{comment}{wishing\ to\ use\ the\ Software\ for\ commercial\ gain\ must\ first\ seek\ and\ obtain}}
+\DoxyCodeLine{00028\ \textcolor{comment}{written\ permission\ from\ the\ copyright\ holders.\ The\ request\ for\ permission\ must}}
+\DoxyCodeLine{00029\ \textcolor{comment}{include:\ -\/A\ detailed\ description\ of\ the\ intended\ commercial\ use.\ -\/The\ expected}}
+\DoxyCodeLine{00030\ \textcolor{comment}{duration\ of\ such\ use.\ -\/Any\ potential\ modifications\ or\ derivatives\ to\ be\ created}}
+\DoxyCodeLine{00031\ \textcolor{comment}{from\ the\ Software.\ -\/Approval\ for\ commercial\ use\ is\ at\ the\ sole\ discretion\ of\ the}}
+\DoxyCodeLine{00032\ \textcolor{comment}{copyright\ holders\ and\ may\ be\ subject\ to\ specific\ terms\ and\ conditions\ as}}
+\DoxyCodeLine{00033\ \textcolor{comment}{stipulated\ at\ the\ time\ of\ approval.\ 3.Enforcement:\ Failure\ to\ comply\ with\ these}}
+\DoxyCodeLine{00034\ \textcolor{comment}{conditions\ will\ be\ considered\ a\ breach\ of\ the\ license\ and\ may\ result\ in}}
+\DoxyCodeLine{00035\ \textcolor{comment}{revocation\ of\ the\ rights\ granted\ under\ this\ License.\ The\ copyright\ holders}}
+\DoxyCodeLine{00036\ \textcolor{comment}{reserve\ the\ right\ to\ take\ any\ action\ deemed\ necessary\ to\ enforce\ compliance\ with}}
+\DoxyCodeLine{00037\ \textcolor{comment}{these\ terms,\ including\ legal\ proceedings.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{}}
+\DoxyCodeLine{00039\ \textcolor{comment}{THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{00040\ \textcolor{comment}{IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{00041\ \textcolor{comment}{FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{00042\ \textcolor{comment}{AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{00043\ \textcolor{comment}{LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{00044\ \textcolor{comment}{OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{00045\ \textcolor{comment}{SOFTWARE.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#ifndef\ SDLGRAPHIC\_H}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#define\ SDLBGRAPH\_H}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#include\ <SDL2/SDL.h>}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#include\ <ctime>}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#include\ <iostream>}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#include\ "{}function.hpp"{}}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#include\ "{}var.hpp"{}}}
+\DoxyCodeLine{00058\ \textcolor{keyword}{namespace\ }sgt\ \{}
+\DoxyCodeLine{00059\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsgt_1_1_s_d_l_g}{SDLG}}\ \{}
+\DoxyCodeLine{00060\ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00061\ \ \ std::vector<Vectorlf>\ points;}
+\DoxyCodeLine{00062\ \ \ \textcolor{keywordtype}{bool}\ isOpen;}
+\DoxyCodeLine{00063\ \ \ SDL\_Window*\ window;}
+\DoxyCodeLine{00064\ \ \ SDL\_Renderer*\ renderer;}
+\DoxyCodeLine{00065\ \ \ SDL\_Event\ e;}
+\DoxyCodeLine{00066\ \ \ \mbox{\hyperlink{structsgt_1_1_colour}{Colour}}\ windowColour;}
+\DoxyCodeLine{00067\ \ \ std::vector<Func>\ funcs;}
+\DoxyCodeLine{00068\ \ \ std::vector<std::vector<std::pair<LineSeg,\ Colour>>>\ curves;}
+\DoxyCodeLine{00069\ \ \ std::vector<std::pair<LineSeg,\ Colour>>\ lines;}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{int}\ winHeight,\ winWidth;}
+\DoxyCodeLine{00072\ \ \ }
+\DoxyCodeLine{00073\ \ \ \textcolor{comment}{//\ Private\ methods\ for\ internal\ functionalities}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{void}\ eventLoop();}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{void}\ drawGraphBackground();}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{void}\ drawLines();}
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{void}\ drawCurve();}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{void}\ initBackground();}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{void}\ updateBackground();}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{void}\ updateLine(\textcolor{keywordtype}{double}\ scale);}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{void}\ updateCurve(\textcolor{keywordtype}{double}\ scale);}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00086\ \ \ \mbox{\hyperlink{classsgt_1_1_s_d_l_g}{SDLG}}();\ }
+\DoxyCodeLine{00087\ \ \ \mbox{\hyperlink{classsgt_1_1_s_d_l_g}{SDLG}}(\mbox{\hyperlink{structsgt_1_1_colour}{Colour}}\ colour);\ }
+\DoxyCodeLine{00088\ \ \ \mbox{\hyperlink{classsgt_1_1_s_d_l_g}{SDLG}}(\textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ width);}
+\DoxyCodeLine{00089\ \ \ \mbox{\hyperlink{classsgt_1_1_s_d_l_g}{SDLG}}(\textcolor{keywordtype}{int}\ heigh,\ \textcolor{keywordtype}{int}\ width,\ \mbox{\hyperlink{structsgt_1_1_colour}{Colour}}\ colour);}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \textcolor{comment}{//\ Public\ methods\ for\ external\ interface}}
+\DoxyCodeLine{00092\ \ \ \textcolor{keywordtype}{void}\ setWinSize(\textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height);}
+\DoxyCodeLine{00093\ \ \ \textcolor{keywordtype}{void}\ setWinwColour(\mbox{\hyperlink{structsgt_1_1_colour}{Colour}}\ colour);}
+\DoxyCodeLine{00094\ \ \ \textcolor{keywordtype}{void}\ startLoop();}
+\DoxyCodeLine{00095\ \ \ \textcolor{keywordtype}{void}\ setLine(\mbox{\hyperlink{structsgt_1_1_vectorlf}{Vectorlf}},\ \mbox{\hyperlink{structsgt_1_1_vectorlf}{Vectorlf}});}
+\DoxyCodeLine{00096\ \ \ \textcolor{keywordtype}{void}\ setLine(\mbox{\hyperlink{structsgt_1_1_vectorlf}{Vectorlf}},\ \mbox{\hyperlink{structsgt_1_1_vectorlf}{Vectorlf}},\ \mbox{\hyperlink{structsgt_1_1_colour}{Colour}}\ colour);}
+\DoxyCodeLine{00097\ \ \ \textcolor{keywordtype}{void}\ setCurve(\textcolor{keywordtype}{int}\ funcIndex);}
+\DoxyCodeLine{00098\ \ \ \textcolor{keywordtype}{void}\ setCurve(\textcolor{keywordtype}{int}\ funcIndex,\ \mbox{\hyperlink{structsgt_1_1_colour}{Colour}}\ colour);}
+\DoxyCodeLine{00099\ \ \ \textcolor{keywordtype}{void}\ deleteLine(\textcolor{keywordtype}{int}\ index);}
+\DoxyCodeLine{00100\ \ \ \textcolor{keywordtype}{void}\ stop();}
+\DoxyCodeLine{00101\ \ \ \mbox{\hyperlink{classsgt_1_1_s_d_l_g}{\string~SDLG}}();}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \textcolor{keywordtype}{void}\ pushFunc(\mbox{\hyperlink{classsgt_1_1_func}{Func}}\ func);}
+\DoxyCodeLine{00104\ \ \ \textcolor{keywordtype}{void}\ removeFunc(\textcolor{keywordtype}{int}\ i);}
+\DoxyCodeLine{00105\ \ \ \textcolor{keywordtype}{void}\ removeCurve(\textcolor{keywordtype}{int}\ i);}
+\DoxyCodeLine{00106\ \};}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \textcolor{keywordtype}{void}\ SDLG::eventLoop()\ \{}
+\DoxyCodeLine{00109\ \ \ \textcolor{comment}{//\ Handle\ events\ on\ queue}}
+\DoxyCodeLine{00110\ \ \ \textcolor{keywordflow}{while}\ (SDL\_PollEvent(\&e)\ !=\ 0)\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ User\ requests\ quit}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keywordflow}{switch}\ (e.type)}
+\DoxyCodeLine{00113\ \ \ \ \ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keywordflow}{case}\ SDL\_QUIT:}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ isOpen\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keywordflow}{case}\ SDL\_MOUSEWHEEL:}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ scale\ =\ 1\ +\ e.wheel.y;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ updateCurve(scale);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00121\ \ \ \ \ \}\ \ }
+\DoxyCodeLine{00122\ \ \ \}}
+\DoxyCodeLine{00123\ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \textcolor{keywordtype}{void}\ SDLG::drawGraphBackground()\ \{}
+\DoxyCodeLine{00126\ \ \ SDL\_SetRenderDrawColor(renderer,\ windowColour.r,\ windowColour.g,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ windowColour.b,\ windowColour.t);}
+\DoxyCodeLine{00128\ \ \ SDL\_RenderClear(renderer);}
+\DoxyCodeLine{00129\ \}}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \textcolor{keywordtype}{void}\ SDLG::updateLine(\textcolor{keywordtype}{double}\ scale)\ \{}
+\DoxyCodeLine{00132\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ (int)lines.size();\ i++)\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ lines[i].first.first\ =\ lines[i].first.first\ *\ scale;}
+\DoxyCodeLine{00134\ \ \ \ \ lines[i].first.second\ =\ lines[i].first.second\ *\ scale;}
+\DoxyCodeLine{00135\ \ \ \}}
+\DoxyCodeLine{00136\ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \textcolor{keywordtype}{void}\ SDLG::updateCurve(\textcolor{keywordtype}{double}\ scale)\ \{}
+\DoxyCodeLine{00139\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ (int)curves.size();\ i++)\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ (int)curves[i].size();\ j++)}
+\DoxyCodeLine{00141\ \ \ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ curves[i][j].first.first\ =\ curves[i][j].first.first\ *\ scale;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ curves[i][j].first.second\ =\ curves[i][j].first.second\ *\ scale;}
+\DoxyCodeLine{00144\ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \}}
+\DoxyCodeLine{00146\ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \textcolor{keywordtype}{void}\ SDLG::drawLines()\ \{}
+\DoxyCodeLine{00149\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ (int)lines.size();\ i++)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ SDL\_SetRenderDrawColor(renderer,\ lines[i].second.r,\ lines[i].second.g,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lines[i].second.b,\ lines[i].second.t);}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \ \ SDL\_RenderDrawLine(renderer,\ lines[i].first.first.x,\ lines[i].first.first.y,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lines[i].first.second.x,\ lines[i].first.second.y);}
+\DoxyCodeLine{00155\ \ \ \}}
+\DoxyCodeLine{00156\ \}}
+\DoxyCodeLine{00157\ \textcolor{keywordtype}{void}\ SDLG::drawCurve()\ \{}
+\DoxyCodeLine{00158\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ (int)curves.size();\ i++)\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ (int)curves[i].size();\ j++)\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ SDL\_SetRenderDrawColor(renderer,\ curves[i][j].second.r,\ curves[i][j].second.g,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curves[i][j].second.b,\ curves[i][j].second.t);}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \ \ \ \ SDL\_RenderDrawLine(renderer,\ curves[i][j].first.first.x,\ curves[i][j].first.first.y,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curves[i][j].first.second.x,\ curves[i][j].first.second.y);}
+\DoxyCodeLine{00165\ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \}}
+\DoxyCodeLine{00167\ \}}
+\DoxyCodeLine{00168\ }
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \textcolor{keywordtype}{void}\ SDLG::setWinSize(\textcolor{keywordtype}{int}\ width,\ \textcolor{keywordtype}{int}\ height)\ \{}
+\DoxyCodeLine{00171\ \ \ SDL\_SetWindowSize(window,\ width,\ height);}
+\DoxyCodeLine{00172\ \}}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \textcolor{keywordtype}{void}\ SDLG::setWinwColour(Colour\ colour)\ \{\ windowColour\ =\ colour;\ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \textcolor{comment}{//\ Constructors\ implementation}}
+\DoxyCodeLine{00177\ SDLG::SDLG()\ :\ SDLG(600,\ 800,\ Colour::White())\ \{\}}
+\DoxyCodeLine{00178\ SDLG::SDLG(Colour\ colour)\ :\ SDLG(600,\ 800,\ colour)\ \{\}}
+\DoxyCodeLine{00179\ SDLG::SDLG(\textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ width)\ :\ SDLG(height,\ width,\ Colour::White())\ \{\}}
+\DoxyCodeLine{00180\ SDLG::SDLG(\textcolor{keywordtype}{int}\ height,\ \textcolor{keywordtype}{int}\ width,\ Colour\ colour)\ :\ winHeight(height),\ winWidth(width)\ \{}
+\DoxyCodeLine{00181\ \ \ std::srand(\textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\textcolor{keyword}{>}(std::time(\textcolor{keyword}{nullptr})));}
+\DoxyCodeLine{00182\ \ \ \textcolor{keywordflow}{if}\ (SDL\_Init(SDL\_INIT\_VIDEO)\ <\ 0)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ initialize\ SDL:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00185\ \ \ \}}
+\DoxyCodeLine{00186\ }
+\DoxyCodeLine{00187\ \ \ window\ =\ SDL\_CreateWindow(\textcolor{stringliteral}{"{}SDL2\ Draw\ Lines\ with\ Different\ Colors"{}},}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SDL\_WINDOWPOS\_CENTERED,\ SDL\_WINDOWPOS\_CENTERED,\ this-\/>winWidth,}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this-\/>winHeight,\ SDL\_WINDOW\_SHOWN\ |\ SDL\_WINDOW\_RESIZABLE);}
+\DoxyCodeLine{00190\ \ \ \textcolor{keywordflow}{if}\ (!window)\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ window:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{00192\ \ \ \ \ SDL\_Quit();}
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00194\ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ renderer\ =\ SDL\_CreateRenderer(window,\ -\/1,\ SDL\_RENDERER\_ACCELERATED);}
+\DoxyCodeLine{00197\ \ \ \textcolor{keywordflow}{if}\ (!renderer)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ std::cerr\ <<\ \textcolor{stringliteral}{"{}Failed\ to\ create\ renderer:\ "{}}\ <<\ SDL\_GetError()\ <<\ std::endl;}
+\DoxyCodeLine{00199\ \ \ \ \ SDL\_DestroyWindow(window);}
+\DoxyCodeLine{00200\ \ \ \ \ SDL\_Quit();}
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00202\ \ \ \}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ setWinwColour(colour);}
+\DoxyCodeLine{00205\ \};}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \textcolor{keywordtype}{void}\ SDLG::startLoop()\ \{}
+\DoxyCodeLine{00208\ \ \ isOpen\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00209\ \ \ \textcolor{keywordflow}{while}\ (isOpen)\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ eventLoop();}
+\DoxyCodeLine{00211\ \ \ \ \ drawGraphBackground();}
+\DoxyCodeLine{00212\ \ \ \ \ drawLines();}
+\DoxyCodeLine{00213\ \ \ \ \ drawCurve();}
+\DoxyCodeLine{00214\ }
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{comment}{//\ Update\ screen}}
+\DoxyCodeLine{00216\ \ \ \ \ SDL\_RenderPresent(renderer);}
+\DoxyCodeLine{00217\ \ \ \}}
+\DoxyCodeLine{00218\ \}}
+\DoxyCodeLine{00219\ \textcolor{keywordtype}{void}\ SDLG::stop()\ \{}
+\DoxyCodeLine{00220\ \ \ isOpen\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00221\ \ \ SDL\_DestroyRenderer(renderer);}
+\DoxyCodeLine{00222\ \ \ SDL\_DestroyWindow(window);}
+\DoxyCodeLine{00223\ \ \ SDL\_Quit();}
+\DoxyCodeLine{00224\ \}}
+\DoxyCodeLine{00225\ }
+\DoxyCodeLine{00226\ \textcolor{keywordtype}{void}\ SDLG::setLine(Vectorlf\ a,\ Vectorlf\ b)\ \{}
+\DoxyCodeLine{00227\ \ \ Colour\ colour((rand()\ \%\ 255),\ (rand()\ \%\ 255),\ (rand()\ \%\ 255),\ 255);}
+\DoxyCodeLine{00228\ \ \ setLine(a,\ b,\ colour);}
+\DoxyCodeLine{00229\ \}}
+\DoxyCodeLine{00230\ \textcolor{keywordtype}{void}\ SDLG::setLine(Vectorlf\ a,\ Vectorlf\ b,\ Colour\ colour)\ \{}
+\DoxyCodeLine{00231\ \ \ LineSeg\ lineSeg\ =\ std::make\_pair(a,\ b);}
+\DoxyCodeLine{00232\ \ \ lines.push\_back(std::make\_pair(lineSeg,\ colour));}
+\DoxyCodeLine{00233\ \}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \textcolor{keywordtype}{void}\ SDLG::setCurve(\textcolor{keywordtype}{int}\ funcIndex)\ \{}
+\DoxyCodeLine{00236\ \ \ Colour\ colour((rand()\ \%\ 255),\ (rand()\ \%\ 255),\ (rand()\ \%\ 255),\ 255);}
+\DoxyCodeLine{00237\ \ \ setCurve(funcIndex,\ colour);}
+\DoxyCodeLine{00238\ \}}
+\DoxyCodeLine{00239\ \textcolor{keywordtype}{void}\ SDLG::setCurve(\textcolor{keywordtype}{int}\ funcIndex,\ Colour\ colour)\ \{}
+\DoxyCodeLine{00240\ \ \ std::vector<std::pair<LineSeg,\ Colour>>\ arc;}
+\DoxyCodeLine{00241\ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{double}\ i\ =\ 0;\ i\ <\ 1000;\ i\ =\ i\ +\ 0.5)\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ LineSeg\ lineSeg\ =}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ std::make\_pair(Vectorlf(i,\ funcs[funcIndex].get\_y(i)),}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vectorlf(i\ +\ 1,\ funcs[funcIndex].get\_y(i\ +\ 1)));}
+\DoxyCodeLine{00245\ \ \ \ \ arc.push\_back(std::make\_pair(lineSeg,colour));}
+\DoxyCodeLine{00246\ \ \ \}}
+\DoxyCodeLine{00247\ \ \ curves.push\_back(arc);}
+\DoxyCodeLine{00248\ \}}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00250\ \textcolor{keywordtype}{void}\ SDLG::deleteLine(\textcolor{keywordtype}{int}\ index)\ \{\ lines.erase(lines.begin()\ +\ index);\ \}}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00252\ SDLG::\string~SDLG()\ \{}
+\DoxyCodeLine{00253\ \ \ \textcolor{keywordflow}{if}\ (renderer)\ SDL\_DestroyRenderer(renderer);}
+\DoxyCodeLine{00254\ \ \ \textcolor{keywordflow}{if}\ (window)\ SDL\_DestroyWindow(window);}
+\DoxyCodeLine{00255\ \ \ SDL\_Quit();}
+\DoxyCodeLine{00256\ \}}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \textcolor{keywordtype}{void}\ SDLG::pushFunc(Func\ func)\ \{\ funcs.push\_back(func);\ \}}
+\DoxyCodeLine{00259\ \textcolor{keywordtype}{void}\ SDLG::removeFunc(\textcolor{keywordtype}{int}\ i)\ \{\ funcs.erase(funcs.begin()\ +\ i);\ \}}
+\DoxyCodeLine{00260\ \textcolor{keywordtype}{void}\ SDLG::removeCurve(\textcolor{keywordtype}{int}\ i)\ \{\ curves.erase(curves.begin()\ +\ i);\ \}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \}\ \ \textcolor{comment}{//\ namespace\ sgt}}
+\DoxyCodeLine{00263\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

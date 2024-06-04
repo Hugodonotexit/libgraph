@@ -1,0 +1,103 @@
+\doxysection{math.\+hpp}
+\hypertarget{math_8hpp_source}{}\label{math_8hpp_source}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{/*}}
+\DoxyCodeLine{00002\ \textcolor{comment}{MIT\ License}}
+\DoxyCodeLine{00003\ \textcolor{comment}{}}
+\DoxyCodeLine{00004\ \textcolor{comment}{Copyright\ (c)\ 2024\ Hugodonotexit}}
+\DoxyCodeLine{00005\ \textcolor{comment}{}}
+\DoxyCodeLine{00006\ \textcolor{comment}{Permission\ is\ hereby\ granted,\ free\ of\ charge,\ to\ any\ person\ obtaining\ a\ copy}}
+\DoxyCodeLine{00007\ \textcolor{comment}{of\ this\ software\ and\ associated\ documentation\ files\ (the\ "{}Software"{}),\ to\ deal}}
+\DoxyCodeLine{00008\ \textcolor{comment}{in\ the\ Software\ without\ restriction,\ including\ without\ limitation\ the\ rights}}
+\DoxyCodeLine{00009\ \textcolor{comment}{to\ use,\ copy,\ modify,\ merge,\ publish,\ distribute,\ sublicense,\ and/or\ sell}}
+\DoxyCodeLine{00010\ \textcolor{comment}{copies\ of\ the\ Software,\ and\ to\ permit\ persons\ to\ whom\ the\ Software\ is}}
+\DoxyCodeLine{00011\ \textcolor{comment}{furnished\ to\ do\ so,\ subject\ to\ the\ following\ conditions:}}
+\DoxyCodeLine{00012\ \textcolor{comment}{}}
+\DoxyCodeLine{00013\ \textcolor{comment}{The\ above\ copyright\ notice\ and\ this\ permission\ notice\ shall\ be\ included\ in\ all}}
+\DoxyCodeLine{00014\ \textcolor{comment}{copies\ or\ substantial\ portions\ of\ the\ Software.}}
+\DoxyCodeLine{00015\ \textcolor{comment}{}}
+\DoxyCodeLine{00016\ \textcolor{comment}{1.Attribution:}}
+\DoxyCodeLine{00017\ \textcolor{comment}{\ \ All\ users\ of\ this\ Software\ must\ give\ appropriate\ credit\ to\ the\ original}}
+\DoxyCodeLine{00018\ \textcolor{comment}{creators.\ Such\ credit\ shall\ include,\ but\ not\ be\ limited\ to,\ the\ inclusion\ of\ the}}
+\DoxyCodeLine{00019\ \textcolor{comment}{following\ elements\ in\ any\ derived\ works,\ distributions,\ or\ publications:\ -\/The}}
+\DoxyCodeLine{00020\ \textcolor{comment}{name\ and\ version\ of\ the\ Software\ used.\ -\/A\ link\ to\ the\ original\ Software\ or\ the}}
+\DoxyCodeLine{00021\ \textcolor{comment}{original\ creator’s\ website\ (if\ applicable).\ -\/A\ clear\ statement\ that\ the\ work\ is}}
+\DoxyCodeLine{00022\ \textcolor{comment}{derived\ from\ or\ built\ with\ the\ Software.\ -\/The\ attribution\ must\ be\ placed\ in\ a}}
+\DoxyCodeLine{00023\ \textcolor{comment}{location\ that\ is\ reasonably\ conspicuous,\ ensuring\ that\ anyone\ using\ or}}
+\DoxyCodeLine{00024\ \textcolor{comment}{interacting\ with\ the\ derivative\ work\ is\ aware\ of\ the\ original\ creators'}}
+\DoxyCodeLine{00025\ \textcolor{comment}{contribution.\ 2.Commercial\ Use:\ Use\ of\ the\ Software\ for\ commercial\ purposes\ is}}
+\DoxyCodeLine{00026\ \textcolor{comment}{subject\ to\ prior\ approval\ by\ the\ original\ creators.\ Entities\ or\ individuals}}
+\DoxyCodeLine{00027\ \textcolor{comment}{wishing\ to\ use\ the\ Software\ for\ commercial\ gain\ must\ first\ seek\ and\ obtain}}
+\DoxyCodeLine{00028\ \textcolor{comment}{written\ permission\ from\ the\ copyright\ holders.\ The\ request\ for\ permission\ must}}
+\DoxyCodeLine{00029\ \textcolor{comment}{include:\ -\/A\ detailed\ description\ of\ the\ intended\ commercial\ use.\ -\/The\ expected}}
+\DoxyCodeLine{00030\ \textcolor{comment}{duration\ of\ such\ use.\ -\/Any\ potential\ modifications\ or\ derivatives\ to\ be\ created}}
+\DoxyCodeLine{00031\ \textcolor{comment}{from\ the\ Software.\ -\/Approval\ for\ commercial\ use\ is\ at\ the\ sole\ discretion\ of\ the}}
+\DoxyCodeLine{00032\ \textcolor{comment}{copyright\ holders\ and\ may\ be\ subject\ to\ specific\ terms\ and\ conditions\ as}}
+\DoxyCodeLine{00033\ \textcolor{comment}{stipulated\ at\ the\ time\ of\ approval.\ 3.Enforcement:\ Failure\ to\ comply\ with\ these}}
+\DoxyCodeLine{00034\ \textcolor{comment}{conditions\ will\ be\ considered\ a\ breach\ of\ the\ license\ and\ may\ result\ in}}
+\DoxyCodeLine{00035\ \textcolor{comment}{revocation\ of\ the\ rights\ granted\ under\ this\ License.\ The\ copyright\ holders}}
+\DoxyCodeLine{00036\ \textcolor{comment}{reserve\ the\ right\ to\ take\ any\ action\ deemed\ necessary\ to\ enforce\ compliance\ with}}
+\DoxyCodeLine{00037\ \textcolor{comment}{these\ terms,\ including\ legal\ proceedings.}}
+\DoxyCodeLine{00038\ \textcolor{comment}{}}
+\DoxyCodeLine{00039\ \textcolor{comment}{THE\ SOFTWARE\ IS\ PROVIDED\ "{}AS\ IS"{},\ WITHOUT\ WARRANTY\ OF\ ANY\ KIND,\ EXPRESS\ OR}}
+\DoxyCodeLine{00040\ \textcolor{comment}{IMPLIED,\ INCLUDING\ BUT\ NOT\ LIMITED\ TO\ THE\ WARRANTIES\ OF\ MERCHANTABILITY,}}
+\DoxyCodeLine{00041\ \textcolor{comment}{FITNESS\ FOR\ A\ PARTICULAR\ PURPOSE\ AND\ NONINFRINGEMENT.\ IN\ NO\ EVENT\ SHALL\ THE}}
+\DoxyCodeLine{00042\ \textcolor{comment}{AUTHORS\ OR\ COPYRIGHT\ HOLDERS\ BE\ LIABLE\ FOR\ ANY\ CLAIM,\ DAMAGES\ OR\ OTHER}}
+\DoxyCodeLine{00043\ \textcolor{comment}{LIABILITY,\ WHETHER\ IN\ AN\ ACTION\ OF\ CONTRACT,\ TORT\ OR\ OTHERWISE,\ ARISING\ FROM,}}
+\DoxyCodeLine{00044\ \textcolor{comment}{OUT\ OF\ OR\ IN\ CONNECTION\ WITH\ THE\ SOFTWARE\ OR\ THE\ USE\ OR\ OTHER\ DEALINGS\ IN\ THE}}
+\DoxyCodeLine{00045\ \textcolor{comment}{SOFTWARE.}}
+\DoxyCodeLine{00046\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#ifndef\ SGTMATH\_H}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#define\ SGTMATH\_H}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#include\ <cmath>}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00051\ \textcolor{keyword}{namespace\ }sgt\ \{}
+\DoxyCodeLine{00055\ \textcolor{keyword}{class\ }\mbox{\hyperlink{classsgt_1_1_math}{Math}}\ \{}
+\DoxyCodeLine{00056\ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00057\ \ \ \mbox{\hyperlink{classsgt_1_1_math}{Math}}()\ \{\};}
+\DoxyCodeLine{00058\ \ \ \textcolor{keywordtype}{double}\ add(\textcolor{keywordtype}{double}\ a,\ \textcolor{keywordtype}{double}\ b)\ \{\textcolor{keywordflow}{return}\ a+b;\}}
+\DoxyCodeLine{00059\ \ \ \textcolor{keywordtype}{double}\ minus(\textcolor{keywordtype}{double}\ a,\ \textcolor{keywordtype}{double}\ b)\ \{\textcolor{keywordflow}{return}\ a-\/b;\}}
+\DoxyCodeLine{00060\ \ \ \textcolor{keywordtype}{double}\ times(\textcolor{keywordtype}{double}\ a,\ \textcolor{keywordtype}{double}\ b)\ \{\textcolor{keywordflow}{return}\ a*b;\}}
+\DoxyCodeLine{00061\ \ \ \textcolor{keywordtype}{double}\ divide(\textcolor{keywordtype}{double}\ a,\ \textcolor{keywordtype}{double}\ b)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{if}\ (b\ ==\ 0)}
+\DoxyCodeLine{00063\ \ \ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::logic\_error(\textcolor{stringliteral}{"{}ERROR\_DIVIDED\_BY\_ZERO"{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ std::nan(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keywordflow}{return}\ a/b;}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \textcolor{keywordtype}{double}\ pow(\textcolor{keywordtype}{double}\ a,\ \textcolor{keywordtype}{double}\ b)\ \{\textcolor{keywordflow}{return}\ std::pow(a,b);\}}
+\DoxyCodeLine{00070\ \ \ \textcolor{keywordtype}{double}\ negative(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ -\/a;\}}
+\DoxyCodeLine{00071\ \ \ \textcolor{keywordtype}{double}\ abs(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::fabs(a);\}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keywordtype}{double}\ ln(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::log(a);\}}
+\DoxyCodeLine{00073\ \ \ \textcolor{keywordtype}{double}\ sin(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::sin(a);\}}
+\DoxyCodeLine{00074\ \ \ \textcolor{keywordtype}{double}\ asin(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::asin(a);\}}
+\DoxyCodeLine{00075\ \ \ \textcolor{keywordtype}{double}\ sinh(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::sinh(a);\}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keywordtype}{double}\ asinh(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::asinh(a);\}}
+\DoxyCodeLine{00077\ \ \ \textcolor{keywordtype}{double}\ cos(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::cos(a);\}}
+\DoxyCodeLine{00078\ \ \ \textcolor{keywordtype}{double}\ acos(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::acos(a);\}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keywordtype}{double}\ cosh(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::cosh(a);\}}
+\DoxyCodeLine{00080\ \ \ \textcolor{keywordtype}{double}\ acosh(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::acosh(a);\}}
+\DoxyCodeLine{00081\ \ \ \textcolor{keywordtype}{double}\ tan(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::tan(a);\}}
+\DoxyCodeLine{00082\ \ \ \textcolor{keywordtype}{double}\ atan(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::atan(a);\}}
+\DoxyCodeLine{00083\ \ \ \textcolor{keywordtype}{double}\ tanh(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::tanh(a);\}}
+\DoxyCodeLine{00084\ \ \ \textcolor{keywordtype}{double}\ atanh(\textcolor{keywordtype}{double}\ a)\ \{\textcolor{keywordflow}{return}\ std::atanh(a);\}}
+\DoxyCodeLine{00085\ \ \ \textcolor{keywordtype}{long}\ factorial(\textcolor{keywordtype}{int}\ a)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keywordflow}{if}\ (a\ ==\ 0)}
+\DoxyCodeLine{00087\ \ \ \ \ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00089\ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{int}\ x\ =\ 1;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 1;\ i\ <=\ a;\ i++)}
+\DoxyCodeLine{00093\ \ \ \ \ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ x\ *=\ i;}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keywordflow}{return}\ x;}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ \ \ \mbox{\hyperlink{classsgt_1_1_math}{\string~Math}}()\ \{\};}
+\DoxyCodeLine{00099\ \};}
+\DoxyCodeLine{00100\ \}\ \ \textcolor{comment}{//\ namespace\ sgt}}
+\DoxyCodeLine{00101\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

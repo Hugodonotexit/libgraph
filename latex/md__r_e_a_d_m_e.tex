@@ -1,0 +1,60 @@
+\chapter{Simple Graphing Tool}
+\hypertarget{md__r_e_a_d_m_e}{}\label{md__r_e_a_d_m_e}\index{Simple Graphing Tool@{Simple Graphing Tool}}
+\label{md__r_e_a_d_m_e_autotoc_md0}%
+\Hypertarget{md__r_e_a_d_m_e_autotoc_md0}%
+ \hypertarget{md__r_e_a_d_m_e_autotoc_md1}{}\doxysection{\texorpdfstring{Overview}{Overview}}\label{md__r_e_a_d_m_e_autotoc_md1}
+This library provides functionality to parse, validate, and evaluate mathematical functions represented as strings. It is designed to handle a variety of operations, including basic arithmetic and more complex functions like trigonometric and logarithmic operations.\hypertarget{md__r_e_a_d_m_e_autotoc_md2}{}\doxysection{\texorpdfstring{Features}{Features}}\label{md__r_e_a_d_m_e_autotoc_md2}
+
+\begin{DoxyItemize}
+\item Parse and validate mathematical functions.
+\item Evaluate functions for given input values.
+\item Support for a wide range of operators and functions.
+\item Error handling for invalid functions.
+\end{DoxyItemize}\hypertarget{md__r_e_a_d_m_e_autotoc_md3}{}\doxysection{\texorpdfstring{Installation}{Installation}}\label{md__r_e_a_d_m_e_autotoc_md3}
+To use this library, simply include the header files in your project.
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{preprocessor}{\#include\ "{}sdlgaphic.hpp"{}}}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md4}{}\doxysection{\texorpdfstring{Usage}{Usage}}\label{md__r_e_a_d_m_e_autotoc_md4}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md5}{}\doxysubsection{\texorpdfstring{Creating a Function Object}{Creating a Function Object}}\label{md__r_e_a_d_m_e_autotoc_md5}
+You can create a Func object by passing a mathematical function as a string\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\mbox{\hyperlink{classsgt_1_1_func}{sgt::Func}}\ myFunction(\textcolor{stringliteral}{"{}sin(x)\ +\ cos(x)\ -\/\ 2*x"{}});}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md6}{}\doxysubsection{\texorpdfstring{Creating a Function Object}{Creating a Function Object}}\label{md__r_e_a_d_m_e_autotoc_md6}
+You can set or update the function string using the set\+Func method\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{myFunction.setFunc(\textcolor{stringliteral}{"{}x\string^2\ +\ 3*x\ -\/\ 4"{}});}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md7}{}\doxysubsection{\texorpdfstring{Getting the Function}{Getting the Function}}\label{md__r_e_a_d_m_e_autotoc_md7}
+You can retrieve the current function string using the get\+Func method\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{std::string\ funcStr\ =\ myFunction.getFunc();}
+\DoxyCodeLine{std::cout\ <<\ \textcolor{stringliteral}{"{}Current\ function:\ "{}}\ <<\ funcStr\ <<\ std::endl;}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md8}{}\doxysubsection{\texorpdfstring{Evaluating the Function}{Evaluating the Function}}\label{md__r_e_a_d_m_e_autotoc_md8}
+To evaluate the function for a given x value\+:
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\textcolor{keywordtype}{double}\ y\ =\ myFunction.get\_y(2.0);}
+\DoxyCodeLine{std::cout\ <<\ \textcolor{stringliteral}{"{}f(2.0)\ =\ "{}}\ <<\ y\ <<\ std::endl;}
+
+\end{DoxyCode}
+\hypertarget{md__r_e_a_d_m_e_autotoc_md9}{}\doxysection{\texorpdfstring{Error Handling}{Error Handling}}\label{md__r_e_a_d_m_e_autotoc_md9}
+The library includes error checking to ensure the validity of the function. If an invalid function is provided, a std\+::logic\+\_\+error will be thrown with an appropriate error message.\hypertarget{md__r_e_a_d_m_e_autotoc_md10}{}\doxysection{\texorpdfstring{License}{License}}\label{md__r_e_a_d_m_e_autotoc_md10}
+This library is licensed under the MIT License. See the LICENSE file for more details.\hypertarget{md__r_e_a_d_m_e_autotoc_md11}{}\doxysection{\texorpdfstring{Contributing}{Contributing}}\label{md__r_e_a_d_m_e_autotoc_md11}
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.\hypertarget{md__r_e_a_d_m_e_autotoc_md12}{}\doxysection{\texorpdfstring{Contact}{Contact}}\label{md__r_e_a_d_m_e_autotoc_md12}
+For any questions or issues, please open an issue on the Git\+Hub repository or contact the author. 
