@@ -47,6 +47,7 @@ SOFTWARE.
 #ifndef SGTMATH_H
 #define SGTMATH_H
 #include <cmath>
+#include <stdexcept>
 namespace sgt {
 class Math {
  protected:

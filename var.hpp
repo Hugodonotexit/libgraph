@@ -50,6 +50,7 @@ SOFTWARE.
 #include <vector>
 #include <cstdint>
 namespace sgt {
+
 struct Vectorlf {
   double x;
   double y;
@@ -67,6 +68,19 @@ struct Vectorlf {
   }
   Vectorlf operator/(const Vectorlf& other) const {
     return Vectorlf(x / other.x, y / other.y);
+  }
+
+  Vectorlf operator+(const double& other) const {
+    return Vectorlf(x + other, y + other);
+  }
+  Vectorlf operator-(const double& other) const {
+    return Vectorlf(x - other, y - other);
+  }
+  Vectorlf operator*(const double& other) const {
+    return Vectorlf(x * other, y * other);
+  }
+  Vectorlf operator/(const double& other) const {
+    return Vectorlf(x / other, y / other);
   }
 };
 
