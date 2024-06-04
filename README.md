@@ -1,4 +1,4 @@
-# Function Parser and Evaluator Library
+# Simple Graphing Tool
 
 ## Overview
 
