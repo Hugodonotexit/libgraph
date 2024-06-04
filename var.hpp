@@ -51,12 +51,15 @@ SOFTWARE.
 #include <cstdint>
 namespace sgt {
 
+// Structure representing a 2D vector with floating-point coordinates
 struct Vectorlf {
   double x;
   double y;
 
+  //Constructor
   Vectorlf(double initX, double initY) : x(initX), y(initY) {}
 
+  // Operator overload
   Vectorlf operator+(const Vectorlf& other) const {
     return Vectorlf(x + other.x, y + other.y);
   }
@@ -84,17 +87,22 @@ struct Vectorlf {
   }
 };
 
+// Alias representing a line segment
 using LineSeg = std::pair<Vectorlf, Vectorlf>;
 
+// Structure representing a color with RGBA components
 struct Colour {
   uint8_t r;
   uint8_t g;
   uint8_t b;
   uint8_t t;
 
+  // Default constructor initializing color to black
   Colour() : r(0), g(0), b(0), t(255) {}
+  // Constructor to initialize color with specified RGBA values
   Colour(double r, double g, double b, double t) : r(r), g(g), b(b), t(t) {}
   
+  // Static methods to create common colors
   static Colour Black(int t = 255)     { return Colour(0, 0, 0, t); }
   static Colour White(int t = 255)     { return Colour(255, 255, 255, t); }
   static Colour Red(int t = 255)       { return Colour(255, 0, 0, t); }

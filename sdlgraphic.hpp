@@ -70,7 +70,7 @@ class SDLG {
 
   int winHeight, winWidth;
   
-
+  // Private methods for internal functionalities
   void eventLoop();
   void drawGraphBackground();
   void drawLines();
@@ -81,10 +81,14 @@ class SDLG {
   void updateCurve(double scale);
 
  public:
+
+  // Constructors
   SDLG(); 
   SDLG(Colour colour); 
   SDLG(int height, int width);
   SDLG(int heigh, int width, Colour colour);
+
+  // Public methods for external interface
   void setWinSize(int width, int height);
   void setWinwColour(Colour colour);
   void startLoop();
@@ -169,6 +173,7 @@ void SDLG::setWinSize(int width, int height) {
 
 void SDLG::setWinwColour(Colour colour) { windowColour = colour; }
 
+// Constructors implementation
 SDLG::SDLG() : SDLG(600, 800, Colour::White()) {}
 SDLG::SDLG(Colour colour) : SDLG(600, 800, colour) {}
 SDLG::SDLG(int height, int width) : SDLG(height, width, Colour::White()) {}

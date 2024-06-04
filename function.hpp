@@ -58,36 +58,83 @@ SOFTWARE.
 #include "math.hpp"
 #include "var.hpp"
 namespace sgt {
+
+// The Func class is designed to parse, validate, and evaluate mathematical functions represented as strings.
+// It extends the sgt::Math class and utilizes various helper methods to process the function.
+
 class Func : protected sgt::Math {
  private:
+  // Vector arrays to hold operators based on their precedence
   std::vector<int> operators[2];
+  
+  // The mathematical function represented as a string
   std::string _function;
+
+  // Variant type to handle different types of function elements (double, char, string)
   using varsFunc = std::variant<double, char, std::string>;
+
+  // Vector to store the parsed function elements
   std::vector<varsFunc> function;
+
+  // Vector to store pairs of bracket indices
   std::vector<std::pair<int, int>> brackets;
+
+  // Vector to store points (not used in provided code)
   std::vector<Vectorlf> point;
+
+  // Method to validate the function
   void checkFunc();
 
+  // Method to scan and process the function
   void scanFunc();
+
+  // Method to clean 'NA' elements from the function
   void cleanNAN();
+
+  // Method to clean redundant brackets
   void cleanBracket();
+
+  // Method to locate brackets in the function
   void locateBrackets();
+
+  // Method to locate operators in the function
   void locateOps();
+
+  // Method to validate long operators like "sin", "cos", etc.
   bool isValidLongOps(std::string s);
 
+  // Method to push the function elements into the vector
   void pushFunc();
+
+  // Method to validate characters in the function
   bool isValidCharacter(char c);
+
+  // Method to check if a value is an integer
   bool isInteger(double value);
 
+  // Method to calculate the result for a given element
   void calculate(varsFunc &element);
 
  public:
+  // Default constructor
   Func();
+
+  // Constructor that initializes the function with a given string
   Func(std::string _function);
+
+  // Method to set the function
   void setFunc(std::string _function);
+
+  // Method to get the function
   std::string getFunc() const;
+
+  // Method to print the parsed function
   void printCompiled() const;
+
+  // Method to get the y-value for a given x-value
   double get_y(double x);
+
+  // Destructor
   ~Func();
 };
 
