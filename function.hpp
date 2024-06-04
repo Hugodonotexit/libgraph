@@ -109,6 +109,9 @@ bool Func::isValidLongOps(std::string s) {
 Func::Func(){};
 Func::Func(std::string _function) { setFunc(_function); }
 void Func::setFunc(std::string _function) {
+  this->_function.erase(this->_function.begin(),this->_function.end());
+  this->function.erase(this->function.begin(),this->function.end());
+
   this->_function = _function;
   try {
     checkFunc();
@@ -116,15 +119,6 @@ void Func::setFunc(std::string _function) {
     std::cerr << "Undefined function!!! " << e.what() << std::endl;
     _function = "NULL";
     function.erase(function.begin(), function.end());
-    return;
-  }
-  try {
-    pushFunc();
-  } catch (const std::logic_error &e) {
-    std::cerr << "Undefined function!!! " << e.what() << std::endl;
-    _function = "NULL";
-    function.erase(function.begin(), function.end());
-    return;
   }
 };
 Func::~Func(){};
@@ -244,6 +238,8 @@ void Func::locateOps() {
 }
 
 void Func::pushFunc() {
+  function.erase(function.begin(),function.end());
+  
   bool isNum = false;
   int numCharStart = 0;
   function.push_back((char)'(');
@@ -577,6 +573,8 @@ void Func::calculate(varsFunc &element) {
 }
 
 double Func::get_y(double x) {
+  pushFunc();
+
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == 'x') {
@@ -585,12 +583,32 @@ double Func::get_y(double x) {
     };
   }
   scanFunc();
-  if (!brackets.empty()) {
+
+  do
+  {
+    if (!brackets.empty()) {
     for (int j = brackets.size() - 1; j >= 0; j--) {
       for (int i = (int)brackets[j].first + 1; i < (int)brackets[j].second - 1;
            i++) {
-        calculate(function[i]);
-        scanFunc();
+            for (size_t k = 0; k < operators[0].size(); k++)
+            {
+              if (i == operators[0][k])
+              {
+                calculate(function[i]);
+                scanFunc();
+              } 
+            }
+      }
+      for (int i = (int)brackets[j].first + 1; i < (int)brackets[j].second - 1;
+           i++) {
+            for (size_t k = 0; k < operators[1].size(); k++)
+            {
+              if (i == operators[1][k])
+              {
+                calculate(function[i]);
+                scanFunc();
+              } 
+            }
       }
     }
   }
@@ -605,6 +623,8 @@ double Func::get_y(double x) {
     }
   }
   cleanNAN();
+  } while (function.size() > 1);
+  
   return std::get<double>(function[0]);
 }
 

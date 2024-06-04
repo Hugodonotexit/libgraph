@@ -9,7 +9,6 @@ int main() {
     cout << "y=";
     cin >> y;
     sgt::Func func(y);
-    func.printCompiled();
     cout << "x=";
     cin >> x;
     printf("%.10lf\n", func.get_y(x));
