@@ -55,6 +55,10 @@ double y = myFunction.get_y(2.0);
 std::cout << "f(2.0) = " << y << std::endl;
 ```
 
+## Depends
+
+SDL (Simple DirectMedia Layer)
+
 ## Error Handling
 
 The library includes error checking to ensure the validity of the function. If an invalid function is provided, a std::logic_error will be thrown with an appropriate error message.
