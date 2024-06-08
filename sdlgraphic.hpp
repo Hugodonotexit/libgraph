@@ -69,6 +69,13 @@ class SDLG {
   std::vector<std::pair<LineSeg, Colour>> lines;
 
   int winHeight, winWidth;
+  double zoom = 0;
+  struct zoomOffset
+  {
+    double x = 0;
+    double y = 0;
+  };
+  zoomOffset zoomOffset;
   
   // Private methods for internal functionalities
   void eventLoop();
@@ -77,8 +84,8 @@ class SDLG {
   void drawCurve();
   void initBackground();
   void updateBackground();
-  void updateLine(double scale);
-  void updateCurve(double scale);
+
+  void updateView();
 
  public:
 
@@ -115,9 +122,8 @@ void SDLG::eventLoop() {
       isOpen = false;
       break;
     case SDL_MOUSEWHEEL:
-      double scale = 1 + e.wheel.y;
-      updateCurve(scale);
-      break;
+      zoom += e.wheel.y;
+    break;
     }  
   }
 }
@@ -126,23 +132,6 @@ void SDLG::drawGraphBackground() {
   SDL_SetRenderDrawColor(renderer, windowColour.r, windowColour.g,
                          windowColour.b, windowColour.t);
   SDL_RenderClear(renderer);
-}
-
-void SDLG::updateLine(double scale) {
-  for (int i = 0; i < (int)lines.size(); i++) {
-    lines[i].first.first = lines[i].first.first * scale;
-    lines[i].first.second = lines[i].first.second * scale;
-  }
-}
-
-void SDLG::updateCurve(double scale) {
-  for (int i = 0; i < (int)curves.size(); i++) {
-    for (int j = 0; j < (int)curves[i].size(); j++)
-    {
-      curves[i][j].first.first = curves[i][j].first.first * scale;
-      curves[i][j].first.second = curves[i][j].first.second * scale;
-    }
-  }
 }
 
 void SDLG::drawLines() {
@@ -184,7 +173,7 @@ SDLG::SDLG(int height, int width, Colour colour) : winHeight(height), winWidth(w
     return;
   }
 
-  window = SDL_CreateWindow("SDL2 Draw Lines with Different Colors",
+  window = SDL_CreateWindow("Simple Graphing Tool",
                             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, this->winWidth,
                             this->winHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
   if (!window) {
@@ -204,14 +193,20 @@ SDLG::SDLG(int height, int width, Colour colour) : winHeight(height), winWidth(w
   setWinwColour(colour);
 };
 
+void SDLG::updateView() {
+  // Set the scale for zooming
+    SDL_RenderSetScale(renderer, zoom, zoom);
+}
+
 void SDLG::startLoop() {
   isOpen = true;
   while (isOpen) {
+
     eventLoop();
     drawGraphBackground();
     drawLines();
     drawCurve();
-
+    updateView();
     // Update screen
     SDL_RenderPresent(renderer);
   }
@@ -238,7 +233,7 @@ void SDLG::setCurve(int funcIndex) {
 }
 void SDLG::setCurve(int funcIndex, Colour colour) {
   std::vector<std::pair<LineSeg, Colour>> arc;
-  for (double i = 0; i < 1000; i = i + 0.5) {
+  for (double i = -1000; i < 1000; i = i + 0.1) {
     LineSeg lineSeg =
         std::make_pair(Vectorlf(i, funcs[funcIndex].get_y(i)),
                        Vectorlf(i + 1, funcs[funcIndex].get_y(i + 1)));

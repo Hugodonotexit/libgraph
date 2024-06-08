@@ -5,7 +5,7 @@ LDFLAGS = -L/usr/lib -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image
 INCLUDES = -I/usr/include/SDL2 -I../
 
 # Source files and corresponding object files
-SRCS = test-0.cpp test-1.cpp test-2.cpp test-3.cpp test-4.cpp
+SRCS = test-0.cpp test-1.cpp test-2.cpp
 OBJS = $(SRCS:.cpp=.o)
 EXES = $(SRCS:.cpp=)
 
