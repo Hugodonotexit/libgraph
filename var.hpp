@@ -57,6 +57,7 @@ struct Vectorlf {
   double y;
 
   //Constructor
+  Vectorlf() {x=0; y=0;}
   Vectorlf(double initX, double initY) : x(initX), y(initY) {}
 
   // Operator overload

@@ -46,6 +46,7 @@ SOFTWARE.
 */
 #ifndef SGTFUNCTION_H
 #define SGTFUNCTION_H
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
@@ -53,24 +54,25 @@ SOFTWARE.
 #include <utility>
 #include <variant>
 #include <vector>
-#include <algorithm>
 
 #include "math.hpp"
 #include "var.hpp"
 namespace sgt {
 
-// The Func class is designed to parse, validate, and evaluate mathematical functions represented as strings.
-// It extends the sgt::Math class and utilizes various helper methods to process the function.
+// The Func class is designed to parse, validate, and evaluate mathematical
+// functions represented as strings. It extends the sgt::Math class and utilizes
+// various helper methods to process the function.
 
 class Func : protected sgt::Math {
  private:
   // Vector arrays to hold operators based on their precedence
-  std::vector<int> operators[2];
-  
+  std::vector<int> operators[3];
+
   // The mathematical function represented as a string
   std::string _function;
 
-  // Variant type to handle different types of function elements (double, char, string)
+  // Variant type to handle different types of function elements (double, char,
+  // string)
   using varsFunc = std::variant<double, char, std::string>;
 
   // Vector to store the parsed function elements
@@ -281,21 +283,23 @@ void Func::locateBrackets() {
 void Func::locateOps() {
   operators[0].erase(operators[0].begin(), operators[0].end());
   operators[1].erase(operators[1].begin(), operators[1].end());
+  operators[2].erase(operators[2].begin(), operators[2].end());
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
-      if (std::get<char>(function[i]) == '*' ||
-          std::get<char>(function[i]) == '/' ||
-          std::get<char>(function[i]) == '^' ||
+      if (std::get<char>(function[i]) == '^' ||
           std::get<char>(function[i]) == '!') {
         operators[0].push_back(i);
+      } else if (std::get<char>(function[i]) == '*' ||
+                 std::get<char>(function[i]) == '/') {
+        operators[1].push_back(i);
       } else if (std::get<char>(function[i]) == '+' ||
                  std::get<char>(function[i]) == '-') {
-        operators[1].push_back(i);
+        operators[2].push_back(i);
       }
 
     } else if (std::holds_alternative<std::string>(function[i])) {
       if (isValidLongOps(std::get<std::string>(function[i]))) {
-        operators[0].push_back(i);
+        operators[1].push_back(i);
       }
     }
   }
@@ -306,7 +310,7 @@ void Func::pushFunc() {
 
   bool isNum = false;
   int numCharStart = 0;
-  
+
   function.push_back((char)'(');
 
   for (int i = 0; i < (int)_function.size(); i++) {
@@ -318,49 +322,49 @@ void Func::pushFunc() {
       double num = std::stod(_function.substr(numCharStart, i - numCharStart));
       function.push_back(num);
       i--;
-    } else if ((std::isdigit(_function[i]) || _function[i] == '.') && isNum) {} 
-      else if (_function[i] == 'e') {
+    } else if ((std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
+    } else if (_function[i] == 'e') {
       function.push_back((double)2.718281828459045);
-    } else if (_function.substr(i,2) == "pi") {
+    } else if (_function.substr(i, 2) == "pi") {
       function.push_back((double)3.1415926535897932);
       i++;
-    } else if (_function.substr(i,2) == "ln") {
+    } else if (_function.substr(i, 2) == "ln") {
       function.push_back("ln");
       i++;
-    } else if (_function.substr(i,5) == "asinh") {
+    } else if (_function.substr(i, 5) == "asinh") {
       function.push_back("asinh");
       i += 4;
-    } else if (_function.substr(i,5) == "acosh") {
+    } else if (_function.substr(i, 5) == "acosh") {
       function.push_back("acosh");
       i += 4;
-    } else if (_function.substr(i,5) == "atanh") {
+    } else if (_function.substr(i, 5) == "atanh") {
       function.push_back("atanh");
       i += 4;
-    } else if (_function.substr(i,4) == "asin") {
+    } else if (_function.substr(i, 4) == "asin") {
       function.push_back("asin");
       i += 3;
-    } else if (_function.substr(i,4) == "acos") {
+    } else if (_function.substr(i, 4) == "acos") {
       function.push_back("acos");
       i += 3;
-    } else if (_function.substr(i,4) == "atan") {
+    } else if (_function.substr(i, 4) == "atan") {
       function.push_back("atan");
       i += 3;
-    } else if (_function.substr(i,4) == "sinh") {
+    } else if (_function.substr(i, 4) == "sinh") {
       function.push_back("sinh");
       i += 3;
-    } else if (_function.substr(i,4) == "cosh") {
+    } else if (_function.substr(i, 4) == "cosh") {
       function.push_back("cosh");
       i += 3;
-    } else if (_function.substr(i,4) == "tanh") {
+    } else if (_function.substr(i, 4) == "tanh") {
       function.push_back("tanh");
       i += 3;
-    } else if (_function.substr(i,3) == "sin") {
+    } else if (_function.substr(i, 3) == "sin") {
       function.push_back("sin");
       i += 2;
-    } else if (_function.substr(i,3) == "cos") {
+    } else if (_function.substr(i, 3) == "cos") {
       function.push_back("cos");
       i += 2;
-    } else if (_function.substr(i,3) == "tan") {
+    } else if (_function.substr(i, 3) == "tan") {
       function.push_back("tan");
       i += 2;
     } else {
@@ -399,33 +403,26 @@ void Func::calculate(varsFunc &element) {
   if (std::holds_alternative<char>(*func) &&
       std::holds_alternative<char>(*(func - 1)) &&
       std::holds_alternative<double>(*(func + 1))) {
-    if (std::get<char>(*(func - 1)) == '(')
-    {
+    if (std::get<char>(*(func - 1)) == '(') {
       switch (std::get<char>(*func)) {
-      case '-':
-        *func = "NA";
-        *(func + 1) = negative(std::get<double>(*(func + 1)));
-        break;
+        case '-':
+          *func = "NA";
+          *(func + 1) = negative(std::get<double>(*(func + 1)));
+          break;
 
-      case '+':
-        *func = "NA";
-        break;
+        case '+':
+          *func = "NA";
+          break;
+      }
     }
-    }
-    
+
   } else if (std::holds_alternative<char>(*func) &&
              std::holds_alternative<double>(*(func - 1)) &&
              std::holds_alternative<double>(*(func + 1))) {
     switch (std::get<char>(*func)) {
-      case '+':
+      case '^':
         *func =
-            add(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
-        *(func + 1) = "NA";
-        *(func - 1) = "NA";
-        break;
-      case '-':
-        *func =
-            minus(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+            pow(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
         *(func + 1) = "NA";
         *(func - 1) = "NA";
         break;
@@ -441,9 +438,15 @@ void Func::calculate(varsFunc &element) {
         *(func + 1) = "NA";
         *(func - 1) = "NA";
         break;
-      case '^':
+      case '+':
         *func =
-            pow(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+            add(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
+        break;
+      case '-':
+        *func =
+            minus(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
         *(func + 1) = "NA";
         *(func - 1) = "NA";
         break;
@@ -504,7 +507,7 @@ void Func::calculate(varsFunc &element) {
 
 double Func::get_y(double x) {
   pushFunc();
-  
+
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == 'x') {
@@ -516,9 +519,10 @@ double Func::get_y(double x) {
   int runtime = 0;
   int initSize = function.size();
   do {
-    if (runtime > initSize)
-    {
-      throw std::runtime_error("ERROR: YOU MAY DISCOVER A BUG, REPORT IT ON https://github.com/Hugodonotexit/libgraph/issues !!!");
+    if (runtime > initSize) {
+      throw std::runtime_error(
+          "ERROR: YOU MAY DISCOVER A BUG, REPORT IT ON "
+          "https://github.com/Hugodonotexit/libgraph/issues !!!");
       return std::nan("");
     }
 
@@ -527,36 +531,61 @@ double Func::get_y(double x) {
       for (int j = brackets.size() - 1; j >= 0; j--) {
         for (int i = (int)brackets[j].first + 1;
              i < (int)brackets[j].second - 1; i++) {
-            for (int k = 0; k < (int)operators[0].size(); k++) {
-              if (i == operators[0][k]) {
-                calculate(function[i]);
-                scanFunc();
-              }
+          for (int k = 0; k < (int)operators[0].size(); k++) {
+            if (i == operators[0][k]) {
+              calculate(function[i]);
+              scanFunc();
+              printCompiled();
             }
+          }
         }
 
         bool foundInOperators0 = false;
-        for (int i = (int)brackets[j].first + 1; i < (int)brackets[j].second - 1; i++) {
-            for (int k = 0; k < (int)operators[0].size(); k++) {
-                if (i == operators[0][k]) {
-                    foundInOperators0 = true;
-                    break;
-                }
-            }
-        }
-        
-        if (!foundInOperators0) {
         for (int i = (int)brackets[j].first + 1;
              i < (int)brackets[j].second - 1; i++) {
+          for (int k = 0; k < (int)operators[0].size(); k++) {
+            if (i == operators[0][k]) {
+              foundInOperators0 = true;
+              break;
+            }
+          }
+          if (foundInOperators0) {break;}
+        }
+
+        if (!foundInOperators0) {
+          for (int i = (int)brackets[j].first + 1;
+               i < (int)brackets[j].second - 1; i++) {
             for (int k = 0; k < (int)operators[1].size(); k++) {
               if (i == operators[1][k]) {
                 calculate(function[i]);
                 scanFunc();
               }
-              
             }
+          }
+          bool foundInOperators1 = false;
+          for (int i = (int)brackets[j].first + 1;
+               i < (int)brackets[j].second - 1; i++) {
+            for (int k = 0; k < (int)operators[1].size(); k++) {
+              if (i == operators[1][k]) {
+                foundInOperators1 = true;
+                break;
+              }
+            }
+            if (foundInOperators1) {break;}
+          }
+
+          if (!foundInOperators1) {
+            for (int i = (int)brackets[j].first + 1;
+                 i < (int)brackets[j].second - 1; i++) {
+              for (int k = 0; k < (int)operators[2].size(); k++) {
+                if (i == operators[2][k]) {
+                  calculate(function[i]);
+                  scanFunc();
+                }
+              }
+            }
+          }
         }
-      }
       }
     }
     cleanNAN();

@@ -64,28 +64,24 @@ class SDLG {
   SDL_Renderer* renderer;
   SDL_Event e;
   Colour windowColour;
-  std::vector<Func> funcs;
-  std::vector<std::vector<std::pair<LineSeg, Colour>>> curves;
+  std::vector<std::pair<Func, Colour>> funcs;
+  std::vector<std::vector<LineSeg>> curves;
   std::vector<std::pair<LineSeg, Colour>> lines;
 
+  Vectorlf scale, centre;
+
   int winHeight, winWidth;
-  double zoom = 0;
-  struct zoomOffset
-  {
-    double x = 0;
-    double y = 0;
-  };
-  zoomOffset zoomOffset;
   
   // Private methods for internal functionalities
   void eventLoop();
   void drawGraphBackground();
   void drawLines();
   void drawCurve();
+  void updateCurve();
+  void updateLine();
   void initBackground();
   void updateBackground();
-
-  void updateView();
+  Vectorlf transformPoint(Vectorlf p);
 
  public:
 
@@ -101,13 +97,12 @@ class SDLG {
   void startLoop();
   void setLine(Vectorlf, Vectorlf);
   void setLine(Vectorlf, Vectorlf, Colour colour);
-  void setCurve(int funcIndex);
-  void setCurve(int funcIndex, Colour colour);
   void deleteLine(int index);
   void stop();
   ~SDLG();
 
   void pushFunc(Func func);
+  void pushFunc(Func func, Colour Colour);
   void removeFunc(int i);
   void removeCurve(int i);
 };
@@ -119,22 +114,23 @@ void SDLG::eventLoop() {
     switch (e.type)
     {
     case SDL_QUIT:
+    case SDLK_ESCAPE:
       isOpen = false;
+      stop();
       break;
     case SDL_MOUSEWHEEL:
-      zoom += e.wheel.y;
+      scale = scale + e.wheel.y;
     break;
     }  
   }
 }
 
-void SDLG::drawGraphBackground() {
-  SDL_SetRenderDrawColor(renderer, windowColour.r, windowColour.g,
-                         windowColour.b, windowColour.t);
-  SDL_RenderClear(renderer);
-}
-
 void SDLG::drawLines() {
+  if (lines.size() == 0)
+  {
+    return;
+  }
+  updateLine();
   for (int i = 0; i < (int)lines.size(); i++) {
     SDL_SetRenderDrawColor(renderer, lines[i].second.r, lines[i].second.g,
                            lines[i].second.b, lines[i].second.t);
@@ -144,13 +140,18 @@ void SDLG::drawLines() {
   }
 }
 void SDLG::drawCurve() {
+  if (funcs.size() == 0)
+  {
+    return;
+  }
+  updateCurve();
   for (int i = 0; i < (int)curves.size(); i++) {
     for (int j = 0; j < (int)curves[i].size(); j++) {
-      SDL_SetRenderDrawColor(renderer, curves[i][j].second.r, curves[i][j].second.g,
-                             curves[i][j].second.b, curves[i][j].second.t);
+      SDL_SetRenderDrawColor(renderer,funcs[i].second.r, funcs[i].second.g,
+                             funcs[i].second.b, funcs[i].second.t);
 
-      SDL_RenderDrawLine(renderer, curves[i][j].first.first.x, curves[i][j].first.first.y,
-                         curves[i][j].first.second.x, curves[i][j].first.second.y);
+      SDL_RenderDrawLine(renderer, curves[i][j].first.x, curves[i][j].first.y,
+                         curves[i][j].second.x, curves[i][j].second.y);
     }
   }
 }
@@ -168,6 +169,12 @@ SDLG::SDLG(Colour colour) : SDLG(600, 800, colour) {}
 SDLG::SDLG(int height, int width) : SDLG(height, width, Colour::White()) {}
 SDLG::SDLG(int height, int width, Colour colour) : winHeight(height), winWidth(width) {
   std::srand(static_cast<unsigned int>(std::time(nullptr)));
+  scale.x = 20;
+  scale.y = 20;
+  centre.x = winWidth/2;
+  centre.y = winHeight/2;
+  initBackground();
+
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
     return;
@@ -193,20 +200,13 @@ SDLG::SDLG(int height, int width, Colour colour) : winHeight(height), winWidth(w
   setWinwColour(colour);
 };
 
-void SDLG::updateView() {
-  // Set the scale for zooming
-    SDL_RenderSetScale(renderer, zoom, zoom);
-}
-
 void SDLG::startLoop() {
   isOpen = true;
   while (isOpen) {
-
     eventLoop();
     drawGraphBackground();
     drawLines();
     drawCurve();
-    updateView();
     // Update screen
     SDL_RenderPresent(renderer);
   }
@@ -223,23 +223,54 @@ void SDLG::setLine(Vectorlf a, Vectorlf b) {
   setLine(a, b, colour);
 }
 void SDLG::setLine(Vectorlf a, Vectorlf b, Colour colour) {
-  LineSeg lineSeg = std::make_pair(a, b);
+  LineSeg lineSeg = std::make_pair(transformPoint(a), (b));
   lines.push_back(std::make_pair(lineSeg, colour));
 }
 
-void SDLG::setCurve(int funcIndex) {
-  Colour colour((rand() % 255), (rand() % 255), (rand() % 255), 255);
-  setCurve(funcIndex, colour);
+Vectorlf SDLG::transformPoint(Vectorlf p) {
+  Vectorlf transformed;
+  transformed.x = (p.x - centre.x) / scale.x;
+  transformed.y = (centre.y - p.y) / scale.y;
+  return transformed;
 }
-void SDLG::setCurve(int funcIndex, Colour colour) {
-  std::vector<std::pair<LineSeg, Colour>> arc;
-  for (double i = -1000; i < 1000; i = i + 0.1) {
-    LineSeg lineSeg =
-        std::make_pair(Vectorlf(i, funcs[funcIndex].get_y(i)),
-                       Vectorlf(i + 1, funcs[funcIndex].get_y(i + 1)));
-    arc.push_back(std::make_pair(lineSeg,colour));
+
+void SDLG::initBackground() {
+  return;
+}
+
+void SDLG::updateLine() {
+  for (int i = 0; i < (int)lines.size(); i++)
+  {
+    lines[i].first.first = transformPoint(lines[i].first.first);
+     lines[i].first.second = transformPoint(lines[i].first.second);
   }
-  curves.push_back(arc);
+}
+
+void SDLG::updateCurve() {
+  curves.erase(curves.begin(), curves.end());
+  for (int i = 0; i < (int)funcs.size(); i++)
+  {
+    std::vector<LineSeg> arc;
+    for (int j = (-winWidth/(scale.x*2) + centre.x - 2); j < (winWidth/(scale.x*2)+ centre.x + 2); j += (2/(scale.x+scale.y)))
+    {
+      Vectorlf p1(j,funcs[i].first.get_y(j));
+      Vectorlf p2(j+1,funcs[i].first.get_y(j+1));
+      arc.push_back(std::make_pair(transformPoint(p1),transformPoint(p2)));
+    }
+    curves.push_back(arc);
+  }
+  
+}
+
+void SDLG::updateBackground() {
+  return;
+}
+
+void SDLG::drawGraphBackground() {
+  updateBackground();
+  SDL_SetRenderDrawColor(renderer, windowColour.r, windowColour.g,
+                         windowColour.b, windowColour.t);
+  SDL_RenderClear(renderer);
 }
 
 void SDLG::deleteLine(int index) { lines.erase(lines.begin() + index); }
@@ -249,8 +280,10 @@ SDLG::~SDLG() {
   if (window) SDL_DestroyWindow(window);
   SDL_Quit();
 }
-
-void SDLG::pushFunc(Func func) { funcs.push_back(func); }
+void SDLG::pushFunc(Func func, Colour colour) { funcs.push_back(std::make_pair(func,colour)); }
+void SDLG::pushFunc(Func func) { 
+  Colour colour((rand() % 255), (rand() % 255), (rand() % 255), 255);
+  pushFunc(func, colour); }
 void SDLG::removeFunc(int i) { funcs.erase(funcs.begin() + i); }
 void SDLG::removeCurve(int i) { curves.erase(curves.begin() + i); }
 
