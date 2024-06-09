@@ -5,7 +5,7 @@ using namespace std;
 
 int main() {
     sgt::Func func;
-    string y[15];
+    string y[20];
     y[0] = "sin(x)";
     y[1] = "cos(x)";
     y[2] = "tan(x)";
@@ -17,11 +17,16 @@ int main() {
     y[8] = "x^3+x^2+x+1";
     y[9] = "e^x/(1+e^x)"; // Sigmoid function
     y[10] = "sin(x)*cos(x)+tan(x)/x";
-    y[11] = "e^(x^2+1)-x/(x+1)";
+    y[11] = "(e^(x^2+1))-(x/(x+1))";
     y[12] = "x^3-x^2+x-1+e^(-x)";
-    y[13] = "(ln(x)/ln(10))^2+1/x^2";
-    y[14] = "e^x/(1+e^x)-x^3/(3+cos(x))";
-    for (int i = 0; i < 15; i++)
+    y[13] = "(ln(x)/ln(10))^2+1/(x^2)";
+    y[14] = "(e^x/(1+e^x))-(x^3/(3+cos(x)))";
+    y[15] = "2^x-11/12";
+    y[16] = "2^x+10";
+    y[17] = "5^x-5";
+    y[18] = "2^x+11/12";
+    y[19] = "2^x/pi";
+    for (int i = 0; i < 20; i++)
     {
         try
         {

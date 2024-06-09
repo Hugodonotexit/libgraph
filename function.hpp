@@ -46,31 +46,34 @@ SOFTWARE.
 */
 #ifndef SGTFUNCTION_H
 #define SGTFUNCTION_H
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <string>
 #include <unordered_set>
 #include <utility>
 #include <variant>
+#include <future>
 #include <vector>
-#include <algorithm>
 
 #include "math.hpp"
 #include "var.hpp"
 namespace sgt {
 
-// The Func class is designed to parse, validate, and evaluate mathematical functions represented as strings.
-// It extends the sgt::Math class and utilizes various helper methods to process the function.
+// The Func class is designed to parse, validate, and evaluate mathematical
+// functions represented as strings. It extends the sgt::Math class and utilizes
+// various helper methods to process the function.
 
 class Func : protected sgt::Math {
  private:
   // Vector arrays to hold operators based on their precedence
-  std::vector<int> operators[2];
-  
+  std::vector<int> operators[3];
+
   // The mathematical function represented as a string
   std::string _function;
 
-  // Variant type to handle different types of function elements (double, char, string)
+  // Variant type to handle different types of function elements (double, char,
+  // string)
   using varsFunc = std::variant<double, char, std::string>;
 
   // Vector to store the parsed function elements
@@ -128,7 +131,7 @@ class Func : protected sgt::Math {
   // Method to get the function
   std::string getFunc() const;
 
-  // Method to print the parsed function
+  // Method to print the parsed function !!!DEBUGGING ONLY!!!
   void printCompiled() const;
 
   // Method to get the y-value for a given x-value
@@ -281,21 +284,23 @@ void Func::locateBrackets() {
 void Func::locateOps() {
   operators[0].erase(operators[0].begin(), operators[0].end());
   operators[1].erase(operators[1].begin(), operators[1].end());
+  operators[2].erase(operators[2].begin(), operators[2].end());
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
-      if (std::get<char>(function[i]) == '*' ||
-          std::get<char>(function[i]) == '/' ||
-          std::get<char>(function[i]) == '^' ||
+      if (std::get<char>(function[i]) == '^' ||
           std::get<char>(function[i]) == '!') {
         operators[0].push_back(i);
+      } else if (std::get<char>(function[i]) == '*' ||
+                 std::get<char>(function[i]) == '/') {
+        operators[1].push_back(i);
       } else if (std::get<char>(function[i]) == '+' ||
                  std::get<char>(function[i]) == '-') {
-        operators[1].push_back(i);
+        operators[2].push_back(i);
       }
 
     } else if (std::holds_alternative<std::string>(function[i])) {
       if (isValidLongOps(std::get<std::string>(function[i]))) {
-        operators[0].push_back(i);
+        operators[1].push_back(i);
       }
     }
   }
@@ -306,183 +311,68 @@ void Func::pushFunc() {
 
   bool isNum = false;
   int numCharStart = 0;
+
   function.push_back((char)'(');
+
   for (int i = 0; i < (int)_function.size(); i++) {
     if ((std::isdigit(_function[i]) || _function[i] == '.') && !isNum) {
       isNum = true;
       numCharStart = i;
-      continue;
     } else if (!(std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
       isNum = false;
       double num = std::stod(_function.substr(numCharStart, i - numCharStart));
       function.push_back(num);
       i--;
-      continue;
     } else if ((std::isdigit(_function[i]) || _function[i] == '.') && isNum) {
-      continue;
     } else if (_function[i] == 'e') {
       function.push_back((double)2.718281828459045);
-      continue;
-    } else if (_function[i] == 'p' && _function[i + 1] == 'i') {
+    } else if (_function.substr(i, 2) == "pi") {
       function.push_back((double)3.1415926535897932);
       i++;
-      continue;
+    } else if (_function.substr(i, 2) == "ln") {
+      function.push_back("ln");
+      i++;
+    } else if (_function.substr(i, 5) == "asinh") {
+      function.push_back("asinh");
+      i += 4;
+    } else if (_function.substr(i, 5) == "acosh") {
+      function.push_back("acosh");
+      i += 4;
+    } else if (_function.substr(i, 5) == "atanh") {
+      function.push_back("atanh");
+      i += 4;
+    } else if (_function.substr(i, 4) == "asin") {
+      function.push_back("asin");
+      i += 3;
+    } else if (_function.substr(i, 4) == "acos") {
+      function.push_back("acos");
+      i += 3;
+    } else if (_function.substr(i, 4) == "atan") {
+      function.push_back("atan");
+      i += 3;
+    } else if (_function.substr(i, 4) == "sinh") {
+      function.push_back("sinh");
+      i += 3;
+    } else if (_function.substr(i, 4) == "cosh") {
+      function.push_back("cosh");
+      i += 3;
+    } else if (_function.substr(i, 4) == "tanh") {
+      function.push_back("tanh");
+      i += 3;
+    } else if (_function.substr(i, 3) == "sin") {
+      function.push_back("sin");
+      i += 2;
+    } else if (_function.substr(i, 3) == "cos") {
+      function.push_back("cos");
+      i += 2;
+    } else if (_function.substr(i, 3) == "tan") {
+      function.push_back("tan");
+      i += 2;
     } else {
-      switch (_function[i]) {
-        case 'a':
-          switch (_function[i + 1]) {
-            case 's':
-              if (_function[i + 2] == 'i' && _function[i + 3] == 'n') {
-                if (_function[i + 4] == 'h') {
-                  function.push_back("asinh");
-                  i++;
-                  i++;
-                  i++;
-                  i++;
-                  continue;
-                } else {
-                  function.push_back("asin");
-                  i++;
-                  i++;
-                  i++;
-                  continue;
-                }
-
-              } else {
-                throw std::logic_error("ERROR02a");
-                return;
-              }
-              break;
-
-            case 'c':
-              if (_function[i + 2] == 'o' && _function[i + 3] == 's') {
-                if (_function[i + 4] == 'h') {
-                  function.push_back("acosh");
-                  i++;
-                  i++;
-                  i++;
-                  i++;
-                  continue;
-                } else {
-                  function.push_back("acos");
-                  i++;
-                  i++;
-                  i++;
-                  continue;
-                }
-
-              } else {
-                throw std::logic_error("ERROR02b");
-                return;
-              }
-              break;
-
-            case 't':
-              if (_function[i + 2] == 'a' && _function[i + 3] == 'n') {
-                if (_function[i + 4] == 'h') {
-                  function.push_back("atanh");
-                  i++;
-                  i++;
-                  i++;
-                  i++;
-                  continue;
-                } else {
-                  function.push_back("atan");
-                  i++;
-                  i++;
-                  i++;
-                  continue;
-                }
-
-              } else {
-                throw std::logic_error("ERROR02c");
-                return;
-              }
-              break;
-
-            default:
-              throw std::logic_error("ERROR02d");
-              return;
-              break;
-          }
-          break;
-
-        case 's':
-          if (_function[i + 1] == 'i' && _function[i + 2] == 'n') {
-            if (_function[i + 3] == 'h') {
-              function.push_back("sinh");
-              i++;
-              i++;
-              i++;
-              continue;
-            } else {
-              function.push_back("sin");
-              i++;
-              i++;
-              continue;
-            }
-
-          } else {
-            throw std::logic_error("ERROR02e");
-            return;
-          }
-          break;
-
-        case 'c':
-          if (_function[i + 1] == 'o' && _function[i + 2] == 's') {
-            if (_function[i + 3] == 'h') {
-              function.push_back("cosh");
-              i++;
-              i++;
-              i++;
-              continue;
-            } else {
-              function.push_back("cos");
-              i++;
-              i++;
-              continue;
-            }
-          } else {
-            throw std::logic_error("ERROR02f");
-            return;
-          }
-          break;
-
-        case 't':
-          if (_function[i + 1] == 'a' && _function[i + 2] == 'n') {
-            if (_function[i + 3] == 'h') {
-              function.push_back("tanh");
-              i++;
-              i++;
-              i++;
-              continue;
-            } else {
-              function.push_back("tan");
-              i++;
-              i++;
-              continue;
-            }
-
-          } else {
-            throw std::logic_error("ERROR02g");
-            return;
-          }
-          break;
-
-        case 'l':
-          if (_function[i + 1] == 'n') {
-            function.push_back("ln");
-            i++;
-            continue;
-          } else {
-            throw std::logic_error("ERROR02h");
-            return;
-          }
-          break;
-      }
+      function.push_back(_function[i]);
     }
-    function.push_back(_function[i]);
   }
+
   if (isNum) {
     double num = std::stod(_function.substr(
         numCharStart, _function.size() - (size_t)numCharStart));
@@ -496,12 +386,12 @@ void Func::pushFunc() {
       if (std::get<char>(function[i]) == '!') {
         if (std::holds_alternative<double>(function[i - 1])) {
           if (!isInteger(std::get<double>(function[i - 1]))) {
-            throw std::logic_error("ERROR02p");
+            throw std::logic_error("ERROR02a");
             return;
           }
 
         } else {
-          throw std::logic_error("ERROR02q");
+          throw std::logic_error("ERROR02b");
           return;
         }
       }
@@ -514,33 +404,26 @@ void Func::calculate(varsFunc &element) {
   if (std::holds_alternative<char>(*func) &&
       std::holds_alternative<char>(*(func - 1)) &&
       std::holds_alternative<double>(*(func + 1))) {
-    if (std::get<char>(*(func - 1)) == '(')
-    {
+    if (std::get<char>(*(func - 1)) == '(') {
       switch (std::get<char>(*func)) {
-      case '-':
-        *func = "NA";
-        *(func + 1) = negative(std::get<double>(*(func + 1)));
-        break;
+        case '-':
+          *func = "NA";
+          *(func + 1) = negative(std::get<double>(*(func + 1)));
+          break;
 
-      case '+':
-        *func = "NA";
-        break;
+        case '+':
+          *func = "NA";
+          break;
+      }
     }
-    }
-    
+
   } else if (std::holds_alternative<char>(*func) &&
              std::holds_alternative<double>(*(func - 1)) &&
              std::holds_alternative<double>(*(func + 1))) {
     switch (std::get<char>(*func)) {
-      case '+':
+      case '^':
         *func =
-            add(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
-        *(func + 1) = "NA";
-        *(func - 1) = "NA";
-        break;
-      case '-':
-        *func =
-            minus(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+            pow(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
         *(func + 1) = "NA";
         *(func - 1) = "NA";
         break;
@@ -556,9 +439,15 @@ void Func::calculate(varsFunc &element) {
         *(func + 1) = "NA";
         *(func - 1) = "NA";
         break;
-      case '^':
+      case '+':
         *func =
-            pow(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+            add(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
+        *(func + 1) = "NA";
+        *(func - 1) = "NA";
+        break;
+      case '-':
+        *func =
+            minus(std::get<double>(*(func - 1)), std::get<double>(*(func + 1)));
         *(func + 1) = "NA";
         *(func - 1) = "NA";
         break;
@@ -627,43 +516,80 @@ double Func::get_y(double x) {
       }
     };
   }
+
+  int runtime = 0;
+  int initSize = function.size();
   do {
+    if (runtime > initSize) {
+      throw std::runtime_error(
+          "ERROR: YOU MAY DISCOVER A BUG, REPORT IT ON "
+          "https://github.com/Hugodonotexit/libgraph/issues !!!");
+      return std::nan("");
+    }
+
     scanFunc();
     if (!brackets.empty()) {
       for (int j = brackets.size() - 1; j >= 0; j--) {
         for (int i = (int)brackets[j].first + 1;
              i < (int)brackets[j].second - 1; i++) {
-            for (int k = 0; k < (int)operators[0].size(); k++) {
-              if (i == operators[0][k]) {
-                calculate(function[i]);
-                scanFunc();
-              }
+          for (int k = 0; k < (int)operators[0].size(); k++) {
+            if (i == operators[0][k]) {
+              calculate(function[i]);
+              scanFunc();
             }
+          }
         }
 
         bool foundInOperators0 = false;
-        for (int i = (int)brackets[j].first + 1; i < (int)brackets[j].second - 1; i++) {
-            for (int k = 0; k < (int)operators[0].size(); k++) {
-                if (i == operators[0][k]) {
-                    foundInOperators0 = true;
-                    break;
-                }
-            }
-        }
-        if (!foundInOperators0) {
         for (int i = (int)brackets[j].first + 1;
              i < (int)brackets[j].second - 1; i++) {
+          for (int k = 0; k < (int)operators[0].size(); k++) {
+            if (i == operators[0][k]) {
+              foundInOperators0 = true;
+              break;
+            }
+          }
+          if (foundInOperators0) {break;}
+        }
+
+        if (!foundInOperators0) {
+          for (int i = (int)brackets[j].first + 1;
+               i < (int)brackets[j].second - 1; i++) {
             for (int k = 0; k < (int)operators[1].size(); k++) {
               if (i == operators[1][k]) {
                 calculate(function[i]);
                 scanFunc();
               }
             }
+          }
+          bool foundInOperators1 = false;
+          for (int i = (int)brackets[j].first + 1;
+               i < (int)brackets[j].second - 1; i++) {
+            for (int k = 0; k < (int)operators[1].size(); k++) {
+              if (i == operators[1][k]) {
+                foundInOperators1 = true;
+                break;
+              }
+            }
+            if (foundInOperators1) {break;}
+          }
+
+          if (!foundInOperators1) {
+            for (int i = (int)brackets[j].first + 1;
+                 i < (int)brackets[j].second - 1; i++) {
+              for (int k = 0; k < (int)operators[2].size(); k++) {
+                if (i == operators[2][k]) {
+                  calculate(function[i]);
+                  scanFunc();
+                }
+              }
+            }
+          }
         }
-      }
       }
     }
     cleanNAN();
+    runtime++;
   } while (function.size() > 1);
 
   return std::get<double>(function[0]);

@@ -49,6 +49,8 @@ SOFTWARE.
 #define SGTVAR_H
 #include <vector>
 #include <cstdint>
+#include <vector>
+#include <future>
 namespace sgt {
 
 // Structure representing a 2D vector with floating-point coordinates
@@ -57,6 +59,7 @@ struct Vectorlf {
   double y;
 
   //Constructor
+  Vectorlf() {x=0; y=0;}
   Vectorlf(double initX, double initY) : x(initX), y(initY) {}
 
   // Operator overload
