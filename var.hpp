@@ -49,6 +49,8 @@ SOFTWARE.
 #define SGTVAR_H
 #include <vector>
 #include <cstdint>
+#include <vector>
+#include <future>
 namespace sgt {
 
 // Structure representing a 2D vector with floating-point coordinates

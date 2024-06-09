@@ -53,6 +53,7 @@ SOFTWARE.
 #include <unordered_set>
 #include <utility>
 #include <variant>
+#include <future>
 #include <vector>
 
 #include "math.hpp"
@@ -535,7 +536,6 @@ double Func::get_y(double x) {
             if (i == operators[0][k]) {
               calculate(function[i]);
               scanFunc();
-              printCompiled();
             }
           }
         }
