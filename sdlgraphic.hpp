@@ -47,11 +47,14 @@ SOFTWARE.
 #ifndef SDLGRAPHIC_H
 #define SDLBGRAPH_H
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <ctime>
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <iomanip>
+#include <sstream>
 
 #include "function.hpp"
 #include "var.hpp"
@@ -63,6 +66,16 @@ class SDLG {
   SDL_Window* window;
   SDL_Renderer* renderer;
   SDL_Event e;
+  TTF_Font* font;
+  std::vector<SDL_Texture*> textTextureX;
+  std::vector<SDL_Surface*> textSurfaceX;
+  std::vector<SDL_Texture*> textTextureY;
+  std::vector<SDL_Surface*> textSurfaceY;
+  std::vector<SDL_Rect> textRectX;
+  std::vector<SDL_Rect> textRectY;
+  std::vector<std::string> textNumX;
+  std::vector<std::string> textNumY;
+  SDL_Color textColor;
   Colour windowColour;
   std::vector<std::pair<Func, Colour>> funcs;
   std::vector<std::vector<LineSeg>> curves;
@@ -78,10 +91,14 @@ class SDLG {
   void drawGraphBackground();
   void drawLines();
   void drawCurve();
-  void updateCurve();
+  void drawText();
   void updateLine();
-  void updateBackground();
+  void updateCurve();
+  void drawBackground();
+  void updateText();
+
   Vectorlf transformPoint(Vectorlf p);
+  std::string getDefaultFontPath();
 
  public:
   // Constructors
@@ -93,18 +110,28 @@ class SDLG {
   // Public methods for external interface
   void setWinSize(int width, int height);
   void setWinwColour(Colour colour);
-  void startLoop();
+  void run();
   void setLine(Vectorlf, Vectorlf);
   void setLine(Vectorlf, Vectorlf, Colour colour);
   void deleteLine(int index);
-  void stop();
   ~SDLG();
 
   void pushFunc(Func func);
   void pushFunc(Func func, Colour Colour);
   void removeFunc(int i);
-  void removeCurve(int i);
+
+  bool getStatus();
 };
+
+std::string SDLG::getDefaultFontPath() {
+#ifdef _WIN32
+    return "C:\\Windows\\Fonts\\arial.ttf"; // Adjust this path if needed
+#elif __linux__
+    return "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"; // Adjust this path if needed
+#else
+    return ""; // Unsupported platform
+#endif
+}
 
 void SDLG::eventLoop() {
   // Handle events on queue
@@ -191,11 +218,18 @@ SDLG::SDLG(int height, int width, Colour colour)
     return;
   }
 
+  if (TTF_Init() == -1) {
+        std::cerr << "TTF_Init: " << TTF_GetError() << std::endl;
+        SDL_Quit();
+        return;
+    }
+
   window = SDL_CreateWindow(
       "Simple Graphing Tool", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      this->winWidth, this->winHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+      this->winWidth, this->winHeight, SDL_WINDOW_SHOWN);
   if (!window) {
     std::cerr << "Failed to create window: " << SDL_GetError() << std::endl;
+    TTF_Quit();
     SDL_Quit();
     return;
   }
@@ -204,37 +238,122 @@ SDLG::SDLG(int height, int width, Colour colour)
   if (!renderer) {
     std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
     SDL_DestroyWindow(window);
+    TTF_Quit();
     SDL_Quit();
     return;
   }
 
+  std::string fontPath = getDefaultFontPath();
+    if (fontPath.empty()) {
+        std::cerr << "No default font path found for this platform." << std::endl;
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return;
+    }
+
+  font = TTF_OpenFont(fontPath.c_str(), 24);
+    if (font == nullptr) {
+        std::cerr << "Failed to load font! TTF_Error: " << TTF_GetError() << std::endl;
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return;
+    }
+
+  int i = 0;
+  do{
+    SDL_Rect rect1;
+    rect1.x = (winWidth/10) * i - 20;
+    rect1.y = winHeight / 2 + 10;
+    rect1.w = 40;
+    rect1.h = 20;
+    textRectX.push_back(rect1);
+    double value = (-(double)winWidth / 2.0 + ((double)winWidth/10.0) * (double)i) / scale.x;
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << value;
+
+    textNumX.push_back(ss.str());
+    textSurfaceX.push_back(TTF_RenderText_Solid(font, textNumX[i].c_str(), textColor));
+    textTextureX.push_back(SDL_CreateTextureFromSurface(renderer, textSurfaceX[i]));
+    if (textSurfaceX[i] == NULL || textTextureX[i] == NULL) {
+    printf("TTF Error: %s\n", TTF_GetError()); 
+    for (int j = 0; j < (int)textSurfaceX.size(); j++)
+    {
+      SDL_FreeSurface(textSurfaceX[j]);
+    }   
+    for (int j = 0; j < (int)textTextureX.size(); j++)
+    {
+      SDL_DestroyTexture(textTextureX[j]);
+    } 
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+    return;
+    }
+    i++;
+  } while (i < winWidth / (winWidth/10));
+
+  i = 0;
+  do{
+    SDL_Rect rect1;
+    rect1.x = winWidth / 2 + 10;
+    rect1.y = (winHeight/10) * i - 10;
+    rect1.w = 40;
+    rect1.h = 20;
+    textRectY.push_back(rect1);
+    double value = ((double)winHeight / 2.0 - (double)i * ((double)winHeight/10.0)) / scale.y;
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << value;
+
+    textNumY.push_back(ss.str());
+    textSurfaceY.push_back(TTF_RenderText_Solid(font, textNumY[i].c_str(), textColor));
+    textTextureY.push_back(SDL_CreateTextureFromSurface(renderer, textSurfaceY[i]));
+    if (textSurfaceY[i] == NULL || textTextureY[i] == NULL) {
+    printf("TTF Error: %s\n", TTF_GetError()); 
+    for (int j = 0; j < (int)textSurfaceY.size(); j++)
+    {
+      SDL_FreeSurface(textSurfaceY[j]);
+    }   
+    for (int j = 0; j < (int)textTextureY.size(); j++)
+    {
+      SDL_DestroyTexture(textTextureY[j]);
+    } 
+    TTF_CloseFont(font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+    return;
+    }
+    i++;
+  } while (i < winHeight / (winHeight/10));
+
   setWinwColour(colour);
-};
-
-void SDLG::startLoop() {
   isOpen = true;
-  while (isOpen) {
-    std::thread t0(std::bind(&SDLG::eventLoop, this));
-    std::thread t1(std::bind(&SDLG::updateCurve, this));
-    std::thread t2(std::bind(&SDLG::updateLine, this));
-    std::thread t3(std::bind(&SDLG::updateBackground, this));
+}
 
-    drawGraphBackground();
-    t0.join();
+void SDLG::run() {
+    std::thread t1(std::bind(&SDLG::eventLoop, this));
+    std::thread t2(std::bind(&SDLG::updateCurve, this));
+    std::thread t3(std::bind(&SDLG::updateLine, this));
+    updateText();
+
     t1.join();
     t2.join();
     t3.join();
+
+    drawGraphBackground();
+    drawBackground();
     drawLines();
     drawCurve();
+    drawText();
 
     SDL_RenderPresent(renderer);
-  }
-}
-void SDLG::stop() {
-  isOpen = false;
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
-  SDL_Quit();
 }
 
 void SDLG::setLine(Vectorlf a, Vectorlf b) {
@@ -276,7 +395,7 @@ void SDLG::updateCurve() {
   curves.erase(curves.begin(), curves.end());
   for (int i = 0; i < (int)funcs.size(); i++) {
     std::vector<LineSeg> arc;
-    for (double j = (-(double)winWidth / (scale.x * 2)); j < ((double)winWidth / (scale.x * 2));
+    for (double j = (-centre.x / scale.x); j < (((double)winWidth - centre.x) / scale.x);
          j += (1.0 / scale.x)) {
       double y1 = funcs[i].first.get_y(j);
       double y2 = funcs[i].first.get_y(j+(1.0 / scale.x));
@@ -294,28 +413,98 @@ void SDLG::updateCurve() {
   }
 }
 
-void SDLG::updateBackground() {
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+void SDLG::drawBackground() {
+  SDL_GetWindowSize(window, &winWidth, &winHeight);
 
-  SDL_RenderDrawLine(renderer, 0, winHeight / 2, winWidth, winHeight / 2);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 150);
 
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+  SDL_RenderDrawLine(renderer, -5, centre.y, winWidth + 5, centre.y);
 
-  SDL_RenderDrawLine(renderer, winWidth / 2, 0, winWidth / 2, winHeight);
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 150);
+
+  SDL_RenderDrawLine(renderer, centre.x, -5, centre.x, winHeight + 5);
 }
+
 void SDLG::drawGraphBackground() {
   SDL_SetRenderDrawColor(renderer, windowColour.r, windowColour.g,
                          windowColour.b, windowColour.t);
   SDL_RenderClear(renderer);
 }
 
+void SDLG::updateText() {
+  for (size_t i = 0; i < textRectY.size(); i++)
+  {
+    SDL_FreeSurface(textSurfaceY[i]);
+    SDL_DestroyTexture(textTextureY[i]);
+    textRectY[i].x = centre.x + 10;
+    textRectY[i].y = (winHeight/10) * i - 10;
+
+    double value = (centre.y - (double)i * ((double)winHeight/10.0)) / scale.y;
+    
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << value;
+    textNumY[i] = ss.str();
+    textSurfaceY[i] = TTF_RenderText_Solid(font, textNumY[i].c_str(), textColor);
+    textTextureY[i] = SDL_CreateTextureFromSurface(renderer, textSurfaceY[i]);
+
+  }
+
+  for (size_t i = 0; i < textRectX.size(); i++)
+  {
+    SDL_FreeSurface(textSurfaceX[i]);
+    SDL_DestroyTexture(textTextureX[i]);
+    textRectX[i].x = (winWidth/10) * i - 20;
+    textRectX[i].y = centre.y + 10;
+
+    double value = (-centre.x + ((double)winWidth/10.0) * (double)i) / scale.x;
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << value;
+    textNumX[i] = ss.str();
+    
+    textSurfaceX[i] = TTF_RenderText_Solid(font, textNumX[i].c_str(), textColor);
+    textTextureX[i] = SDL_CreateTextureFromSurface(renderer, textSurfaceX[i]);
+  }
+}
+
+void SDLG::drawText() {
+  for (size_t i = 0; i < textRectX.size(); i++)
+  {
+    SDL_RenderCopy(renderer, textTextureX[i], NULL, &textRectX[i]);
+  }
+  for (size_t i = 0; i < textRectY.size(); i++)
+  {
+    SDL_RenderCopy(renderer, textTextureY[i], NULL, &textRectY[i]);
+  }
+}
+
 void SDLG::deleteLine(int index) { lines.erase(lines.begin() + index); }
 
 SDLG::~SDLG() {
-  if (renderer) SDL_DestroyRenderer(renderer);
-  if (window) SDL_DestroyWindow(window);
+  for (size_t i = 0; i < textTextureX.size(); i++)
+  {
+    SDL_DestroyTexture(textTextureX[i]);
+  }
+  for (size_t i = 0; i < textSurfaceX.size(); i++)
+  {
+    SDL_FreeSurface(textSurfaceX[i]);
+  }
+  for (size_t i = 0; i < textTextureY.size(); i++)
+  {
+    SDL_DestroyTexture(textTextureY[i]);
+  }
+  for (size_t i = 0; i < textSurfaceY.size(); i++)
+  {
+    SDL_FreeSurface(textSurfaceY[i]);
+  }
+  
+  TTF_CloseFont(font);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  TTF_Quit();
   SDL_Quit();
+
 }
+
 void SDLG::pushFunc(Func func, Colour colour) {
   funcs.push_back(std::make_pair(func, colour));
 }
@@ -323,8 +512,10 @@ void SDLG::pushFunc(Func func) {
   Colour colour((rand() % 255), (rand() % 255), (rand() % 255), 255);
   pushFunc(func, colour);
 }
-void SDLG::removeFunc(int i) { funcs.erase(funcs.begin() + i); }
-void SDLG::removeCurve(int i) { curves.erase(curves.begin() + i); }
-
+void SDLG::removeFunc(int i) { 
+  funcs.erase(funcs.begin() + i); 
+  curves.erase(curves.begin() + i);
+  }
+bool SDLG::getStatus() {return isOpen;}
 }  // namespace sgt
 #endif
