@@ -1,21 +1,18 @@
 #include "../sdlgraphic.hpp"
+#include <iostream>
 
 int main() {
     sgt::SDLG graph;
     sgt::Func func("10*sin(x)");
     graph.pushFunc(func);
-    sgt::Func fun("x^3+x^2+x+1");
-    graph.pushFunc(fun);
-    sgt::Vectorlf a(-500,-500);
-    sgt::Vectorlf b(500,500);
-    graph.setLine(a,b,sgt::Colour::Green());
-    sgt::Vectorlf c(100,100);
-    sgt::Vectorlf d(-100,-100);
-    graph.setLine(c,d,sgt::Colour::Blue());
-    sgt::Vectorlf e(300,5);
-    sgt::Vectorlf f(-300,5);
-    graph.setLine(e,f,sgt::Colour::Yellow());
+    sgt::Vectorlf e(8,-8);
+    sgt::Vectorlf f(-8,8);
+    graph.setLine(e,f,sgt::Colour::Red());
 
-    graph.startLoop();
+    while (graph.getStatus())
+    {
+        graph.run();
+    }
+
     return 0;
 }

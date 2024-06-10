@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = g++
 CXXFLAGS = -Wall -std=c++20 -Ofast
-LDFLAGS = -L/usr/lib -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image
+LDFLAGS = -L/usr/lib -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_image -lSDL2_ttf
 INCLUDES = -I/usr/include/SDL2 -I../
 
 # Source files and corresponding object files
