@@ -48,6 +48,8 @@ SOFTWARE.
 #define SDLBGRAPH_H
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <omp.h>
+
 
 #include <ctime>
 #include <iostream>
@@ -170,6 +172,7 @@ void SDLG::drawLines() {
   if (linesDraw.size() == 0) {
     return;
   }
+  
   for (int i = 0; i < (int)linesDraw.size(); i++) {
     SDL_SetRenderDrawColor(renderer, linesDraw[i].second.r,
                            linesDraw[i].second.g, linesDraw[i].second.b,
@@ -184,7 +187,9 @@ void SDLG::drawCurve() {
   if (funcs.size() == 0) {
     return;
   }
+  
   for (int i = 0; i < (int)curves.size(); i++) {
+    #pragma omp parallel for
     for (int j = 0; j < (int)curves[i].size(); j++) {
       SDL_SetRenderDrawColor(renderer, funcs[i].second.r, funcs[i].second.g,
                              funcs[i].second.b, funcs[i].second.t);
@@ -377,6 +382,7 @@ void SDLG::updateLine() {
     return;
   }
   linesDraw.erase(linesDraw.begin(), linesDraw.end());
+  #pragma omp parallel for
   for (int i = 0; i < (int)lines.size(); i++) {
     auto p1 = std::async(std::launch::async, &SDLG::transformPoint, this,
                          lines[i].first.first);
@@ -393,6 +399,7 @@ void SDLG::updateCurve() {
   }
 
   curves.erase(curves.begin(), curves.end());
+  
   for (int i = 0; i < (int)funcs.size(); i++) {
     std::vector<LineSeg> arc;
     for (double j = (-centre.x / scale.x); j < (((double)winWidth - centre.x) / scale.x);

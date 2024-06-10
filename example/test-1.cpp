@@ -4,6 +4,7 @@
 using namespace std;
 
 int main() {
+    auto start = std::chrono::high_resolution_clock::now();
     sgt::Func func;
     string y[20];
     y[0] = "sin(x)";
@@ -17,7 +18,7 @@ int main() {
     y[8] = "x^3+x^2+x+1";
     y[9] = "e^x/(1+e^x)"; // Sigmoid function
     y[10] = "sin(x)*cos(x)+tan(x)/x";
-    y[11] = "(e^(x^2+1))-(x/(x+1))";
+    y[11] = "5^(x*2+1)-x/(x+1)";
     y[12] = "x^3-x^2+x-1+e^(-x)";
     y[13] = "(ln(x)/ln(10))^2+1/(x^2)";
     y[14] = "(e^x/(1+e^x))-(x^3/(3+cos(x)))";
@@ -43,5 +44,8 @@ int main() {
         
         
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration = end - start;
+    std::cout << "The function took " << duration.count() << " seconds to run." << std::endl;
     return 0;
 }

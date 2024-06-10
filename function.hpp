@@ -506,9 +506,9 @@ void Func::calculate(varsFunc &element) {
   }
 }
 
+
 double Func::get_y(double x) {
   pushFunc();
-
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == 'x') {
