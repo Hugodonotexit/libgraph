@@ -239,7 +239,7 @@ void Func::cleanNAN() {
 };
 
 void Func::cleanBracket() {
-  for (int i = 0; i < (int)function.size(); i++) {
+  for (int i = 0; i < (int)function.size()-2; i++) {
     if (std::holds_alternative<char>(function[i]) &&
         std::holds_alternative<char>(function[i + 2]) &&
         std::holds_alternative<double>(function[i + 1])) {
