@@ -54,11 +54,11 @@ namespace sgt {
 ///////////////////////////////////////////////////////////////////////
 class Math {
  protected:
-  Math() {};
-  double add(double a, double b) {return a+b;}
-  double minus(double a, double b) {return a-b;}
-  double times(double a, double b) {return a*b;}
-  double divide(double a, double b) {
+  inline Math() {};
+  inline double add(double a, double b) {return a+b;}
+  inline double minus(double a, double b) {return a-b;}
+  inline double times(double a, double b) {return a*b;}
+  inline double divide(double a, double b) {
     if (b == 0)
     {
       throw std::logic_error("ERROR_DIVIDED_BY_ZERO");
@@ -66,23 +66,23 @@ class Math {
     }
     return a/b;
     }
-  double pow(double a, double b) {return std::pow(a,b);}
-  double negative(double a) {return -a;}
-  double abs(double a) {return std::fabs(a);}
-  double ln(double a) {return std::log(a);}
-  double sin(double a) {return std::sin(a);}
-  double asin(double a) {return std::asin(a);}
-  double sinh(double a) {return std::sinh(a);}
-  double asinh(double a) {return std::asinh(a);}
-  double cos(double a) {return std::cos(a);}
-  double acos(double a) {return std::acos(a);}
-  double cosh(double a) {return std::cosh(a);}
-  double acosh(double a) {return std::acosh(a);}
-  double tan(double a) {return std::tan(a);}
-  double atan(double a) {return std::atan(a);}
-  double tanh(double a) {return std::tanh(a);}
-  double atanh(double a) {return std::atanh(a);}
-  long factorial(int a) {
+  inline double pow(double a, double b) {return std::pow(a,b);}
+  inline double negative(double a) {return -a;}
+  inline double abs(double a) {return std::fabs(a);}
+  inline double ln(double a) {return std::log(a);}
+  inline double sin(double a) {return std::sin(a);}
+  inline double asin(double a) {return std::asin(a);}
+  inline double sinh(double a) {return std::sinh(a);}
+  inline double asinh(double a) {return std::asinh(a);}
+  inline double cos(double a) {return std::cos(a);}
+  inline double acos(double a) {return std::acos(a);}
+  inline double cosh(double a) {return std::cosh(a);}
+  inline double acosh(double a) {return std::acosh(a);}
+  inline double tan(double a) {return std::tan(a);}
+  inline double atan(double a) {return std::atan(a);}
+  inline double tanh(double a) {return std::tanh(a);}
+  inline double atanh(double a) {return std::atanh(a);}
+  inline long factorial(int a) {
     if (a == 0)
     {
       return 1;
@@ -95,7 +95,7 @@ class Math {
     }
     return x;
   }
-  ~Math() {};
+  inline ~Math() {};
 };
 }  // namespace sgt
 #endif

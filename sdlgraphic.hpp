@@ -57,7 +57,7 @@ SOFTWARE.
 #include <vector>
 #include <iomanip>
 #include <sstream>
-
+#include <cmath>
 #include "function.hpp"
 #include "var.hpp"
 namespace sgt {
@@ -144,7 +144,12 @@ void SDLG::eventLoop() {
         isOpen = false;
         break;
       case SDL_MOUSEWHEEL:
-            scale = scale + e.wheel.y;
+            scale = scale + e.wheel.y * (1.0 / (1.0 + pow(2.71, -scale.x + 5.0)));
+            if (scale.x < 0.01 || scale.y < 0.01)
+            {
+              scale.x=0.01;
+              scale.y=0.01;
+            }
             break;
       case SDL_KEYDOWN:
         switch (e.key.keysym.sym) {
@@ -152,16 +157,16 @@ void SDLG::eventLoop() {
             isOpen = false;
             break; 
           case SDLK_LEFT:
-            centre.x -= 1;
+            centre.x -= fabs(1/(1+pow(2.71,-centre.x))-0.5);
             break;
           case SDLK_RIGHT:
-            centre.x += 1;
+            centre.x += fabs(1/(1+pow(2.71,-centre.x))-0.5);
             break;
           case SDLK_UP:
-            centre.y -= 1;
+            centre.y -= fabs(1/(1+pow(2.71,-centre.y))-0.5);
             break;
           case SDLK_DOWN:
-            centre.y += 1;
+            centre.y += fabs(1/(1+pow(2.71,-centre.y))-0.5);
             break;
         }
     }
@@ -172,7 +177,6 @@ void SDLG::drawLines() {
   if (linesDraw.size() == 0) {
     return;
   }
-  
   for (int i = 0; i < (int)linesDraw.size(); i++) {
     SDL_SetRenderDrawColor(renderer, linesDraw[i].second.r,
                            linesDraw[i].second.g, linesDraw[i].second.b,
@@ -184,12 +188,8 @@ void SDLG::drawLines() {
   }
 }
 void SDLG::drawCurve() {
-  if (funcs.size() == 0) {
-    return;
-  }
-  
+  if (funcs.size() == 0) return;
   for (int i = 0; i < (int)curves.size(); i++) {
-    #pragma omp parallel for
     for (int j = 0; j < (int)curves[i].size(); j++) {
       SDL_SetRenderDrawColor(renderer, funcs[i].second.r, funcs[i].second.g,
                              funcs[i].second.b, funcs[i].second.t);
@@ -276,7 +276,7 @@ SDLG::SDLG(int height, int width, Colour colour)
     rect1.w = 40;
     rect1.h = 20;
     textRectX.push_back(rect1);
-    double value = (-(double)winWidth / 2.0 + ((double)winWidth/10.0) * (double)i) / scale.x;
+    long double value = (-(long double)winWidth / 2.0 + ((long double)winWidth/10.0) * (long double)i) / scale.x;
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << value;
 
@@ -311,7 +311,7 @@ SDLG::SDLG(int height, int width, Colour colour)
     rect1.w = 40;
     rect1.h = 20;
     textRectY.push_back(rect1);
-    double value = ((double)winHeight / 2.0 - (double)i * ((double)winHeight/10.0)) / scale.y;
+    long double value = ((long double)winHeight / 2.0 - (long double)i * ((long double)winHeight/10.0)) / scale.y;
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << value;
 
@@ -378,11 +378,8 @@ Vectorlf SDLG::transformPoint(Vectorlf p) {
 }
 
 void SDLG::updateLine() {
-  if (lines.size() == 0) {
-    return;
-  }
+  if (lines.size() == 0) return;
   linesDraw.erase(linesDraw.begin(), linesDraw.end());
-  #pragma omp parallel for
   for (int i = 0; i < (int)lines.size(); i++) {
     auto p1 = std::async(std::launch::async, &SDLG::transformPoint, this,
                          lines[i].first.first);
@@ -394,18 +391,15 @@ void SDLG::updateLine() {
 }
 
 void SDLG::updateCurve() {
-  if (funcs.size() == 0) {
-    return;
-  }
-
+  if (funcs.size() == 0) return;
   curves.erase(curves.begin(), curves.end());
-  
+  #pragma omp parallel for
   for (int i = 0; i < (int)funcs.size(); i++) {
     std::vector<LineSeg> arc;
-    for (double j = (-centre.x / scale.x); j < (((double)winWidth - centre.x) / scale.x);
+    for (long double j = (-centre.x / scale.x); j < (((long double)winWidth - centre.x) / scale.x);
          j += (1.0 / scale.x)) {
-      double y1 = funcs[i].first.get_y(j);
-      double y2 = funcs[i].first.get_y(j+(1.0 / scale.x));
+      long double y1 = funcs[i].first.get_y(j);
+      long double y2 = funcs[i].first.get_y(j+(1.0 / scale.x));
 
       Vectorlf p1(j, y1);
       Vectorlf p2(j + (1.0 / scale.x), y2);
@@ -439,6 +433,7 @@ void SDLG::drawGraphBackground() {
 }
 
 void SDLG::updateText() {
+  
   for (size_t i = 0; i < textRectY.size(); i++)
   {
     SDL_FreeSurface(textSurfaceY[i]);
@@ -446,7 +441,7 @@ void SDLG::updateText() {
     textRectY[i].x = centre.x + 10;
     textRectY[i].y = (winHeight/10) * i - 10;
 
-    double value = (centre.y - (double)i * ((double)winHeight/10.0)) / scale.y;
+    long double value = (centre.y - (long double)i * ((long double)winHeight/10.0)) / scale.y;
     
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << value;
@@ -463,7 +458,7 @@ void SDLG::updateText() {
     textRectX[i].x = (winWidth/10) * i - 20;
     textRectX[i].y = centre.y + 10;
 
-    double value = (-centre.x + ((double)winWidth/10.0) * (double)i) / scale.x;
+    long double value = (-centre.x + ((long double)winWidth/10.0) * (long double)i) / scale.x;
     std::stringstream ss;
     ss << std::fixed << std::setprecision(2) << value;
     textNumX[i] = ss.str();

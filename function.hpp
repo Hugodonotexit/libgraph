@@ -55,6 +55,7 @@ SOFTWARE.
 #include <variant>
 #include <future>
 #include <vector>
+#include <omp.h>
 
 #include "math.hpp"
 #include "var.hpp"
@@ -141,9 +142,9 @@ class Func : protected sgt::Math {
   ~Func();
 };
 
-bool Func::isInteger(double value) { return std::floor(value) == value; }
+inline bool Func::isInteger(double value) { return std::floor(value) == value; }
 
-bool Func::isValidCharacter(char c) {
+inline bool Func::isValidCharacter(char c) {
   static const std::unordered_set<char> validChars = {
       '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
       '+', '-', '*', '/', '^', '!', 'x', 'e', 'a', 'h', 'i',
@@ -151,16 +152,16 @@ bool Func::isValidCharacter(char c) {
   return validChars.find(c) != validChars.end();
 }
 
-bool Func::isValidLongOps(std::string s) {
+inline bool Func::isValidLongOps(std::string s) {
   static const std::unordered_set<std::string> validLongOps = {
       "ln",   "sin",   "asin", "sinh", "asinh", "cos",  "acos",
       "cosh", "acosh", "tan",  "atan", "tanh",  "atanh"};
   return validLongOps.find(s) != validLongOps.end();
 }
 
-Func::Func(){};
-Func::Func(std::string _function) { setFunc(_function); }
-void Func::setFunc(std::string _function) {
+inline Func::Func(){};
+inline Func::Func(std::string _function) { setFunc(_function); }
+inline void Func::setFunc(std::string _function) {
   this->_function.erase(this->_function.begin(), this->_function.end());
   this->function.erase(this->function.begin(), this->function.end());
 
@@ -173,9 +174,9 @@ void Func::setFunc(std::string _function) {
     function.erase(function.begin(), function.end());
   }
 };
-Func::~Func(){};
-std::string Func::getFunc() const { return _function; };
-void Func::printCompiled() const {
+inline Func::~Func(){};
+inline std::string Func::getFunc() const { return _function; };
+inline void Func::printCompiled() const {
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<double>(function[i])) {
       std::cout << std::get<double>(function[i]);
@@ -191,7 +192,7 @@ void Func::printCompiled() const {
   std::cout << std::endl;
 }
 
-void Func::checkFunc() {
+inline void Func::checkFunc() {
   if (_function[0] == '/' || _function[0] == '*' || _function[0] == '^' ||
       _function[0] == '!') {
     throw std::logic_error("ERROR00a");
@@ -221,13 +222,13 @@ void Func::checkFunc() {
   }
 };
 
-void Func::scanFunc() {
+inline void Func::scanFunc() {
   cleanBracket();
   cleanNAN();
   locateBrackets();
   locateOps();
 }
-void Func::cleanNAN() {
+inline void Func::cleanNAN() {
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<std::string>(function[i])) {
       if (std::get<std::string>(function[i]) == "NA") {
@@ -238,7 +239,8 @@ void Func::cleanNAN() {
   }
 };
 
-void Func::cleanBracket() {
+
+inline void Func::cleanBracket() {
   for (int i = 0; i < (int)function.size()-2; i++) {
     if (std::holds_alternative<char>(function[i]) &&
         std::holds_alternative<char>(function[i + 2]) &&
@@ -252,7 +254,7 @@ void Func::cleanBracket() {
   }
 }
 
-void Func::locateBrackets() {
+inline void Func::locateBrackets() {
   brackets.erase(brackets.begin(), brackets.end());
   std::vector<int> openBracket, closeBracket;
   for (int i = 0; i < (int)function.size(); i++) {
@@ -281,7 +283,7 @@ void Func::locateBrackets() {
   }
 }
 
-void Func::locateOps() {
+inline void Func::locateOps() {
   operators[0].erase(operators[0].begin(), operators[0].end());
   operators[1].erase(operators[1].begin(), operators[1].end());
   operators[2].erase(operators[2].begin(), operators[2].end());
@@ -509,6 +511,7 @@ void Func::calculate(varsFunc &element) {
 
 double Func::get_y(double x) {
   pushFunc();
+  #pragma omp parallel for
   for (int i = 0; i < (int)function.size(); i++) {
     if (std::holds_alternative<char>(function[i])) {
       if (std::get<char>(function[i]) == 'x') {
