@@ -1,76 +1,88 @@
-# Simple Graphing Tool
+## libgraph: A Simple C++ Library for Interactive Graphing
 
-## Overview
+**libgraph** is a lightweight C++ library designed to simplify interactive graphing. It provides a user-friendly interface to define, evaluate, and visualize mathematical functions, as well as draw lines and points on a graphical canvas. Built upon SDL (Simple DirectMedia Layer), it offers a basic yet effective platform for visualization and exploration of mathematical concepts.
 
-This library provides functionality to parse, validate, and evaluate mathematical functions represented as strings. It is designed to handle a variety of operations, including basic arithmetic and more complex functions like trigonometric and logarithmic operations.
+**Key Features:**
 
-## Features
+- **Function Parsing and Evaluation:** libgraph utilizes a `Func` class to parse and validate mathematical functions expressed as strings. It supports a range of operations, including arithmetic, trigonometric, and logarithmic functions. 
+- **Interactive Graphing:** The `SDLG` class handles the graphical representation of functions and lines. It provides a customizable canvas with adjustable zoom and pan features, enabling users to explore the visualized data interactively.
+- **Basic Drawing Primitives:** The library allows users to draw lines and points on the canvas, providing additional flexibility for visual representation.
+- **Customizable Colors:** Both functions and drawing elements can be customized with different colors, improving clarity and visual appeal.
 
-- Parse and validate mathematical functions.
-- Evaluate functions for given input values.
-- Support for a wide range of operators and functions.
-- Error handling for invalid functions.
+**Core Classes:**
 
-## Installation
+- **`Func`:** Represents a mathematical function parsed from a string.
+    - `setFunc(std::string func)`: Sets the function string.
+    - `getFunc()`: Returns the function string.
+    - `get_y(double x)`: Evaluates the function for a given `x` value.
+- **`SDLG`:** Handles the graphical rendering and user interactions.
+    - `setWinSize(int width, int height)`: Sets the window size.
+    - `setWinwColour(Colour colour)`: Sets the background color.
+    - `run()`: Starts the graphical loop, handling events and rendering.
+    - `setLine(Vectorlf a, Vectorlf b, Colour colour)`: Draws a line segment.
+    - `deleteLine(int index)`: Deletes a line segment.
+    - `pushFunc(Func func, Colour colour)`: Adds a function to the graph.
+    - `removeFunc(int i)`: Removes a function from the graph.
 
-To use this library, simply include the header files in your project.
+**Example Usage:**
 
 ```cpp
 #include "sdlgaphic.hpp"
+#include <iostream>
+
+int main() {
+  // Create an SDLG object with default settings
+  sgt::SDLG graph;
+
+  // Define a function
+  sgt::Func function("sin(x) + cos(x)");
+
+  // Add the function to the graph
+  graph.pushFunc(function);
+
+  // Set a line
+  graph.setLine(sgt::Vectorlf(0, 0), sgt::Vectorlf(10, 10), sgt::Colour::Red());
+
+  // Run the graphical loop
+  graph.run();
+
+  return 0;
+}
 ```
 
-## Usage
+**Dependencies:**
 
-### Creating a Function Object
+**Core Dependencies:**
 
-You can create a Func object by passing a mathematical function as a string:
+* **SDL (Simple DirectMedia Layer):** This is the primary dependency for graphical rendering. It provides the foundation for creating windows, managing events, and drawing graphics.
+* **SDL_ttf:** This library is used for rendering text on the graph. It allows you to display labels, axes, and other text elements.
 
-```cpp
-sgt::Func myFunction("sin(x) + cos(x) - 2*x");
-```
+**Optional Dependencies:**
 
-### Creating a Function Object
+* **OpenMP:** This library can be used for parallel processing, potentially accelerating the evaluation of functions for large datasets. However, it's not strictly required for basic functionality.
 
-You can set or update the function string using the setFunc method:
+**Note:** The dependencies need to be installed on your system before you can compile and run `libgraph`. The installation instructions for each dependency are provided in the "Installation" section of the documentation.
 
-```cpp
-myFunction.setFunc("x^2 + 3*x - 4");
-```
+Here's a breakdown of why each dependency is needed:
 
-### Getting the Function
+* **SDL:** Provides the core functionality for creating a graphical window, handling user input (mouse and keyboard), and drawing lines, curves, and other graphical elements.
+* **SDL_ttf:** Enables the rendering of text within the graph window. This is crucial for displaying labels, axes, and other textual information.
+* **OpenMP:**  Allows for parallel execution of tasks, potentially improving performance for computationally intensive functions. However, it's not essential for the basic functionality of the library.
 
-You can retrieve the current function string using the getFunc method:
+**Installation:**
 
-```cpp
-std::string funcStr = myFunction.getFunc();
-std::cout << "Current function: " << funcStr << std::endl;
-```
+1. **Install SDL:** Follow the instructions for your operating system: [https://www.libsdl.org/](https://www.libsdl.org/)
+2. **Install SDL_ttf:** Follow the instructions for your operating system: [https://www.libsdl.org/projects/SDL_ttf/](https://www.libsdl.org/projects/SDL_ttf/)
+3. **Include the `sdlgaphic.hpp` header file in your project.**
 
-### Evaluating the Function
+**License:**
 
-To evaluate the function for a given x value:
+MIT License
 
-```cpp
-double y = myFunction.get_y(2.0);
-std::cout << "f(2.0) = " << y << std::endl;
-```
+**Contributions:**
 
-## Depends
+Contributions are welcome! Please fork the repository and submit a pull request.
 
-SDL (Simple DirectMedia Layer)
+**Contact:**
 
-## Error Handling
-
-The library includes error checking to ensure the validity of the function. If an invalid function is provided, a std::logic_error will be thrown with an appropriate error message.
-
-## License
-
-This library is licensed under the MIT License. See the LICENSE file for more details.
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request with your changes.
-
-## Contact
-
-For any questions or issues, please open an issue on the GitHub repository or contact the author.
+For questions or issues, please open an issue on the GitHub repository.
