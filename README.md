@@ -50,7 +50,6 @@ int main() {
 }
 ```
 
-**Dependencies:**
 
 **Core Dependencies:**
 
