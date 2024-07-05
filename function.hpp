@@ -239,8 +239,9 @@ inline void Func::cleanNAN() {
   }
 };
 
+
 inline void Func::cleanBracket() {
-  for (int i = 0; i < (int)function.size(); i++) {
+  for (int i = 0; i < (int)function.size()-2; i++) {
     if (std::holds_alternative<char>(function[i]) &&
         std::holds_alternative<char>(function[i + 2]) &&
         std::holds_alternative<double>(function[i + 1])) {
@@ -276,7 +277,7 @@ inline void Func::locateBrackets() {
     }
   }
   for (int i = 0; i < (int)openBracket.size(); i++) {
-    for (int j = closeBracket.size(); j >= 0; j--) {
+    for (int j = closeBracket.size() - 1; j >= 0; j--) {
       brackets.push_back(std::make_pair(openBracket[i], closeBracket[j]));
     }
   }
