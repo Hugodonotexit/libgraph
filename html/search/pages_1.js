@@ -1,4 +1,0 @@
-var searchData=
-[
-  ['simple_20graphing_20tool_0',['Simple Graphing Tool',['../md__r_e_a_d_m_e.html',1,'']]]
-];
