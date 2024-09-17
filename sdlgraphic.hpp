@@ -89,7 +89,7 @@ class SDLG {
   int winHeight, winWidth;
 
   // Private methods for internal functionalities
-  void eventLoop();
+  bool eventLoop();
   void drawGraphBackground();
   void drawLines();
   void drawCurve();
@@ -135,14 +135,14 @@ std::string SDLG::getDefaultFontPath() {
 #endif
 }
 
-void SDLG::eventLoop() {
+bool SDLG::eventLoop() {
   // Handle events on queue
   while (SDL_PollEvent(&e) != 0) {
     // User requests quit
     switch (e.type) {
       case SDL_QUIT:
         isOpen = false;
-        break;
+        return false;
       case SDL_MOUSEWHEEL:
             scale = scale + e.wheel.y * (1.0 / (1.0 + pow(2.71, -scale.x + 5.0)));
             if (scale.x < 0.01 || scale.y < 0.01)
@@ -150,27 +150,28 @@ void SDLG::eventLoop() {
               scale.x=0.01;
               scale.y=0.01;
             }
-            break;
+            return true;
       case SDL_KEYDOWN:
         switch (e.key.keysym.sym) {
           case SDLK_ESCAPE:
             isOpen = false;
-            break; 
+            return false; 
           case SDLK_LEFT:
             centre.x -= fabs(1/(1+pow(2.71,-centre.x))-0.5);
-            break;
+            return true;
           case SDLK_RIGHT:
             centre.x += fabs(1/(1+pow(2.71,-centre.x))-0.5);
-            break;
+            return true;
           case SDLK_UP:
             centre.y -= fabs(1/(1+pow(2.71,-centre.y))-0.5);
-            break;
+            return true;
           case SDLK_DOWN:
             centre.y += fabs(1/(1+pow(2.71,-centre.y))-0.5);
-            break;
+            return true;
         }
     }
   }
+  return false;
 }
 
 void SDLG::drawLines() {
@@ -340,23 +341,43 @@ SDLG::SDLG(int height, int width, Colour colour)
 
   setWinwColour(colour);
   isOpen = true;
+
+  auto future1 = std::async(std::launch::async, &SDLG::updateCurve, this);
+  auto future2 = std::async(std::launch::async, &SDLG::updateLine, this);
+  auto future3 = std::async(std::launch::async, &SDLG::drawGraphBackground, this);
+  auto future4 = std::async(std::launch::async, &SDLG::drawBackground, this);
+  updateText();
+  auto future5 = std::async(std::launch::async, &SDLG::drawText, this);
+  future1.wait();
+  auto future6 = std::async(std::launch::async, &SDLG::drawCurve, this);
+  future2.wait();
+  auto future7 = std::async(std::launch::async, &SDLG::drawLines, this);
+  future3.wait(); 
+  future4.wait(); 
+  future5.wait(); 
+  future6.wait(); 
+  future7.wait();
 }
 
 void SDLG::run() {
-    std::thread t1(std::bind(&SDLG::eventLoop, this));
-    std::thread t2(std::bind(&SDLG::updateCurve, this));
-    std::thread t3(std::bind(&SDLG::updateLine, this));
-    updateText();
-
-    t1.join();
-    t2.join();
-    t3.join();
-
-    drawGraphBackground();
-    drawBackground();
-    drawLines();
-    drawCurve();
-    drawText();
+    int result = eventLoop();
+    if (result) {
+      auto future1 = std::async(std::launch::async, &SDLG::updateCurve, this);
+      auto future2 = std::async(std::launch::async, &SDLG::updateLine, this);
+      auto future3 = std::async(std::launch::async, &SDLG::drawGraphBackground, this);
+      auto future4 = std::async(std::launch::async, &SDLG::drawBackground, this);
+      updateText();
+      auto future5 = std::async(std::launch::async, &SDLG::drawText, this);
+      future1.wait();
+      auto future6 = std::async(std::launch::async, &SDLG::drawCurve, this);
+      future2.wait();
+      auto future7 = std::async(std::launch::async, &SDLG::drawLines, this);
+      future3.wait();
+      future4.wait();
+      future5.wait();
+      future6.wait(); 
+      future7.wait(); 
+    }
 
     SDL_RenderPresent(renderer);
 }
